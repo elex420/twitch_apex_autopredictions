@@ -16,8 +16,8 @@ import pyperclip
 client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
 client_secret = "7w7ouwrd9qzbpecuzz79d7f0cxz1ew"  #twitch API client secret
 broadcaster = "elex420" #channel the commands are run in
-origin = "MgCiutch-TTV"  #origin username of the tracked player
-twitch_OAuth ="user_oauth_test.csv"
+origin = "gdolphin"  #origin username of the tracked player
+twitch_OAuth = "user_oauth.csv"
 
 with open ('ALS_APIkey.csv') as keyfile: #import Apexlegendsstatus api key
     reader = csv.reader(keyfile)
@@ -66,7 +66,7 @@ def check_user_OAuth_token(): #check twitch user OAuth token and refresh in case
         }   
     response = requests.get(url, headers=headers)
     data = response.json()
-    if 'message' in data and 'invalid access token' in data['message']:
+    if 'message' in data and 'invalid access token' in data['message'] or 'message' in data and 'missing authorization token' in data['message']:
         url = 'https://id.twitch.tv/oauth2/token'
         params = {
             'grant_type': 'refresh_token',
