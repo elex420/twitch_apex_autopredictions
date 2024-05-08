@@ -16,7 +16,8 @@ import pyperclip
 client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
 client_secret = "7w7ouwrd9qzbpecuzz79d7f0cxz1ew"  #twitch API client secret
 broadcaster = "elex420" #channel the commands are run in
-origin = "gdolphin"  #origin username of the tracked player
+origin = "MgCiutch-TTV"  #origin username of the tracked player
+twitch_OAuth ="user_oauth_test.csv"
 with open ('ALS_APIkey.csv') as keyfile: #import Apexlegendsstatus api key
     reader = csv.reader(keyfile)
     for row in reader:
@@ -47,13 +48,13 @@ def get_user_OAuth_token(client_id): #get user OAuth token
     token = twitch.fetch_token("https://id.twitch.tv/oauth2/token", code=authorization_code, client_secret=client_secret, include_client_id=True)
     access_token = token['access_token']
     refresh_token = token['refresh_token']
-    with open("user_oauth_test.csv", "w") as tokens:
+    with open(twitch_OAuth, "w") as tokens:
         writer = csv.writer(tokens)
         writer.writerow([access_token, refresh_token])
     return access_token
 
 def check_user_OAuth_token(): #check twitch user OAuth token and refresh in case it's expired
-    with open("user_oauth_test.csv") as current_token:
+    with open(twitch_OAuth) as current_token:
         reader = csv.reader(current_token)
         first_row = next(reader)  # Get the first row
         token = first_row[0]  # Get the first element of the first row
@@ -79,8 +80,8 @@ def check_user_OAuth_token(): #check twitch user OAuth token and refresh in case
         else:
             new_access_token = data['access_token']
             new_refresh_token = data['refresh_token']
-            with open("user_oauth_test.csv", "w") as tokens:
-                writer =csv.writer(tokens)
+            with open(twitch_OAuth, "w") as tokens:
+                writer = csv.writer(tokens)
                 writer.writerow([new_access_token, new_refresh_token])
             return new_access_token
     else:
@@ -158,6 +159,7 @@ def setup_rp_prediction(): #setup returns value to bet on (x), prediction id and
         'prediction_window': prediction_window
     }
     response = requests.post(url, headers=headers, json=data)
+    print(response.json())
     prediction_id = response.json()['data'][0]['id']
     outcome1_id = response.json()['data'][0]['outcomes'][0]['id']
     outcome2_id = response.json()['data'][0]['outcomes'][1]['id']
