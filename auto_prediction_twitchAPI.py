@@ -18,6 +18,7 @@ client_secret = "7w7ouwrd9qzbpecuzz79d7f0cxz1ew"  #twitch API client secret
 broadcaster = "elex420" #channel the commands are run in
 origin = "MgCiutch-TTV"  #origin username of the tracked player
 twitch_OAuth ="user_oauth_test.csv"
+
 with open ('ALS_APIkey.csv') as keyfile: #import Apexlegendsstatus api key
     reader = csv.reader(keyfile)
     for row in reader:
