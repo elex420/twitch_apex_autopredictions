@@ -160,7 +160,6 @@ def setup_rp_prediction(): #setup returns value to bet on (x), prediction id and
         'prediction_window': prediction_window
     }
     response = requests.post(url, headers=headers, json=data)
-    print(response.json())
     prediction_id = response.json()['data'][0]['id']
     outcome1_id = response.json()['data'][0]['outcomes'][0]['id']
     outcome2_id = response.json()['data'][0]['outcomes'][1]['id']
