@@ -1,7 +1,7 @@
 # TWITCH FULL AUTO PREDICTIONS FOR APEX LEGENDS STREAMS
 
 ## 1. Installation
-This is a simple python script. You can run it from your console or an IDE of your choice.  
+This is a simple python script. Once you download this repo you can run it from your console or an IDE of your choice.  
 Make sure that the libraries imported at the beginning of the script are installed in your environment.  
 
 ## 2. First setup
@@ -33,7 +33,7 @@ If you want to report an issue please add it to the Issues tab right here on git
 
 ## 5. License  
 
-MIT-License 2024 elex420:  
+MIT-License elex420 2024:  
   
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
