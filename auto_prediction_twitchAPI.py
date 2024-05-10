@@ -15,7 +15,7 @@ import pyperclip
 
 client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
 client_secret = "7w7ouwrd9qzbpecuzz79d7f0cxz1ew"  #twitch API client secret
-broadcaster = "gdolphn" #channel the commands are run in
+broadcaster = "elex420" #channel the commands are run in
 origin = "gdolphin"  #origin username of the tracked player
 twitch_OAuth = "user_oauth.csv"
 
@@ -23,7 +23,7 @@ with open ('ALS_APIkey.csv') as keyfile: #import Apexlegendsstatus api key
     reader = csv.reader(keyfile)
     for row in reader:
         ALS_API_key = row[0]
-prediction_types = ["kills", "rp"]
+prediction_types = ["kills", "rp", "damage"]
 
 ###HANDLING TWITCH AUTHORIZATION
 def get_OAuth_token(client_id, client_secret): #OAuth token to grant auto-predictions access to twitch API
@@ -166,6 +166,35 @@ def setup_rp_prediction(): #setup returns value to bet on (x), prediction id and
     
     return x, prediction_id, outcome1_id, outcome2_id
 
+def randomise_damage_prediction(): #randomise the kill values to bet on
+    x = int(random.randrange(1200, 2500, 50))
+    title = "How much damage next game?"
+    outcome1 = str(x) + " or more"
+    outcome2 = "less than " + str(x)
+    
+    return title, outcome1, outcome2, x
+
+def setup_damage_prediction(): #setup returns value to bet on (x), prediction id and outcome-id's
+    title, outcome1, outcome2, x = randomise_damage_prediction()
+    url = 'https://api.twitch.tv/helix/predictions'
+    headers = {
+        'Authorization': f'Bearer {user_OAuth_token}',
+        'Client-ID': client_id,
+        'Content-Type': 'application/json'
+        }
+    data = {
+        'broadcaster_id': streamer_id,
+        'title': title,
+        'outcomes': [{"title": outcome1}, {"title": outcome2}],
+        'prediction_window': prediction_window
+    }
+    response = requests.post(url, headers=headers, json=data)
+    prediction_id = response.json()['data'][0]['id']
+    outcome1_id = response.json()['data'][0]['outcomes'][0]['id']
+    outcome2_id = response.json()['data'][0]['outcomes'][1]['id']
+    
+    return x, prediction_id, outcome1_id, outcome2_id
+
 def get_prediction_id():
     url = 'https://api.twitch.tv/helix/predictions'
     headers = {
@@ -233,6 +262,25 @@ def get_rp_change():
     rp_change = response.json()[0]['BRScoreChange']
     
     return rp_change
+
+def get_latest_damage():
+   url = "https://api.mozambiquehe.re/games"
+   params = {
+       'auth': ALS_API_key,
+       'uid': uid,
+       'limit': 1
+       }
+   response = requests.get(url, params=params)
+   
+   data = response.json()[0]['gameData']
+   
+   for item in data:
+       if item['key'] == 'damage':
+           last_game_kills = item['value']
+       else: 
+           None
+           
+   return last_game_kills  
 
 def close_prediction(outcome):
     if outcome == 1:
@@ -346,6 +394,34 @@ if __name__ =="__main__":
                         prediction_type = "none"
                         previous_start_time = get_last_gamestart()
                         print("cancelled rp prediction")
+                        break
+                else:
+                    time.sleep(30)
+                    print("running")
+        
+        elif "damage" in prediction_type:
+            x, prediction_id, outcome1_id, outcome2_id = setup_damage_prediction()
+            starttime = time.time()
+            while True:
+                if previous_start_time != get_last_gamestart():
+                    if int(time.time() - starttime) >= 125:
+                        if get_latest_damage() >= x:
+                            close_prediction(1)
+                            prediction_type = "none"
+                            previous_start_time = get_last_gamestart()
+                            print("closed damage prediction")
+                            break
+                        elif get_latest_damage() < x:
+                            close_prediction(2)
+                            prediction_type = "none"
+                            previous_start_time = get_last_gamestart()
+                            print("closed damage prediction")
+                            break
+                    elif int(time.time() - starttime) < 125:
+                        cancel_prediction()
+                        prediction_type = "none"
+                        previous_start_time = get_last_gamestart()
+                        print("cancelled damage prediction")
                         break
                 else:
                     time.sleep(30)
