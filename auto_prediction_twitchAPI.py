@@ -15,7 +15,7 @@ import pyperclip
 
 client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
 client_secret = "7w7ouwrd9qzbpecuzz79d7f0cxz1ew"  #twitch API client secret
-broadcaster = "elex420" #channel the commands are run in
+broadcaster = "gdolphn" #channel the commands are run in
 origin = "gdolphin"  #origin username of the tracked player
 twitch_OAuth = "user_oauth.csv"
 
