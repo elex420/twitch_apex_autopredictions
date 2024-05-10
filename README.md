@@ -28,6 +28,7 @@ Upon closure or cancellation another prediction will be set up.
 
 ## 4. Contact  
 If you need help or have feedback you can reach me on [twitter](https://twitter.com/whotookelex420) or [discord](https://discordapp.com/users/elex420#4962).  
+If you want to report an issue please add it to the Issues tab right here on github.  
 
 ## 5. License  
 
