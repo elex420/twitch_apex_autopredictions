@@ -21,7 +21,8 @@ Once you have gone through this process the twitch-OAuth keys will be fetched fr
 
 ## 3. Usage
 Once the first setup is done you can run the script either from your console or your preferred IDE.  
-**Make sure the player you are tracking has BR Damage and Apex Kills trackers equipped on all the legends they play.** Data can only be fetched from equipped banners.  
+Default prediction window is 2 minutes.  
+*Make sure the player you are tracking has BR Damage and Apex Kills trackers equipped on all the legends they play.* Data can only be fetched from equipped banners.  
 Currently predictions on damage, rp gained and kills are possible. If you want to run predictions on pubs remove `"rp",` from `prediction_types` in line 26.  
 It will automatically set up randomised predictions for your viewers to bet on and close them or cancel them, if you die before the prediction has been closed.  
 Upon closure or cancellation another prediction will be set up.   
