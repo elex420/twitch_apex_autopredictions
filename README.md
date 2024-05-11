@@ -11,7 +11,7 @@ Then you will also need the client_secret key. Message elex420 for your key (see
 Then you need to specify the variables `broadcaster` and `origin` in lines 18 and 19.  
 `broadcaster` should be set to the twitch channel name that you want to run predictions in.  
 `origin` needs to be set to the origin username of the monitored player (streamer). You can get it from the players ApexLegendsStatus page.  
-You can also change the amount of time, that the prediction is open to bet on. For that change 'prediction_window' in line 20. Accepted values are 30, 60, 120, 300, 600, 900, 1200 or 1600 seconds. This should be chosen depending on the length of queue times.  
+You can also change the amount of time that the prediction is open to bet on. For that change `prediction_window` in line 20. Accepted values are 30, 60, 120, 300, 600, 900, 1200 or 1600 seconds. This should be chosen depending on the length of queue times.  
 
 Now you can run the script. **THIS NEXT PART HAS TO BE DONE BY THE CHANNEL OWNER.** If you are a moderator running the predictions for a streamer you have to send them the Authorization URL and they will have to send the redirect link back to you.  
 On the first run you will be met with your console telling you `Authorization URL copied to clipboard. Paste it in your browser`.  
