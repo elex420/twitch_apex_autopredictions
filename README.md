@@ -7,6 +7,7 @@ Make sure that the libraries imported at the beginning of the script are install
 ## 2. First setup
 For this script to work you will need to be t3 patreon sub to hugo as it uses his matchhistory API -> [link](https://www.patreon.com/hugodev/posts)  
 Once you recieve your API key save it in ALS_APIkey.csv - make sure to remove the dummy text in the file first.  
+Then you will also need the client_secret key. Message elex420 for your key (see contact information below).  
 Then you need to specify the variables `broadcaster` and `origin` in lines 18 and 19.  
 `broadcaster` should be set to the twitch channel name that you want to run predictions in.  
 `origin` needs to be set to the origin username of the monitored player (streamer). You can get it from the players ApexLegendsStatus page.  
