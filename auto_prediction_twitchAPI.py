@@ -352,6 +352,7 @@ if __name__ =="__main__":
             print("kill prediction setup")
             x, prediction_id, outcome1_id, outcome2_id = setup_kill_prediction(user_OAuth_token, client_id, streamer_id, prediction_window)
             starttime = time.time()
+            time.sleep(120)
             while True:
                 if previous_start_time != get_last_gamestart():
                     if int(time.time() - starttime) >= (prediction_window + 45):
@@ -380,6 +381,7 @@ if __name__ =="__main__":
             print("rp prediction setup")
             x, prediction_id, outcome1_id, outcome2_id = setup_rp_prediction()
             starttime = time.time()
+            time.sleep(120)
             while True:
                 if previous_start_time != get_last_gamestart():
                     if int(time.time() - starttime) >= (prediction_window + 45):
@@ -408,8 +410,9 @@ if __name__ =="__main__":
             print("damage prediction setup")
             x, prediction_id, outcome1_id, outcome2_id = setup_damage_prediction()
             starttime = time.time()
+            time.sleep(120)
             while True:
-                if previous_start_time != get_last_gamestart() and :
+                if previous_start_time != get_last_gamestart():
                     if int(time.time() - starttime) >= (prediction_window + 45):
                         if get_latest_damage() >= x:
                             close_prediction(1)
