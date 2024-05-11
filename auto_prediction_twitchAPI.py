@@ -28,6 +28,7 @@ with open ('ALS_APIkey.csv') as keyfile: #import Apexlegendsstatus api key
     reader = csv.reader(keyfile)
     for row in reader:
         ALS_API_key = row[0]
+        
 prediction_types = ["kills", "rp", "damage"]
 
 ###HANDLING TWITCH AUTHORIZATION
