@@ -18,6 +18,7 @@ client_secret = "7w7ouwrd9qzbpecuzz79d7f0cxz1ew"  #twitch API client secret
 broadcaster = "" #channel the commands are run in
 origin = ""  #origin username of the tracked player
 twitch_OAuth = "user_oauth.csv"
+prediction_window = 120
 
 with open ('ALS_APIkey.csv') as keyfile: #import Apexlegendsstatus api key
     reader = csv.reader(keyfile)
@@ -334,7 +335,6 @@ if __name__ =="__main__":
     uid = get_als_uid()
     prediction_type = choose_random_prediction()
     previous_start_time = get_last_gamestart()
-    prediction_window = 120
     try:
         prediction_id = get_prediction_id()
         cancel_prediction()
@@ -348,7 +348,7 @@ if __name__ =="__main__":
             starttime = time.time()
             while True:
                 if previous_start_time != get_last_gamestart():
-                    if int(time.time() - starttime) >= 125:
+                    if int(time.time() - starttime) >= prediction_window:
                         if get_latest_kills() >= x:
                             close_prediction(1)
                             prediction_type = "none"
@@ -361,7 +361,7 @@ if __name__ =="__main__":
                             previous_start_time = get_last_gamestart()
                             print("closed kill prediction")
                             break
-                    elif int(time.time() - starttime) < 125:
+                    elif int(time.time() - starttime) < prediction_window:
                         cancel_prediction()
                         prediction_type = "none"
                         previous_start_time = get_last_gamestart()
@@ -376,7 +376,7 @@ if __name__ =="__main__":
             starttime = time.time()
             while True:
                 if previous_start_time != get_last_gamestart():
-                    if int(time.time() - starttime) >= 125:
+                    if int(time.time() - starttime) >= prediction_window:
                         if get_rp_change() >= x:
                             close_prediction(1)
                             prediction_type = "none"
@@ -389,7 +389,7 @@ if __name__ =="__main__":
                             previous_start_time = get_last_gamestart()
                             print("closed rp prediction")
                             break
-                    elif int(time.time() - starttime) < 125:
+                    elif int(time.time() - starttime) < prediction_window:
                         cancel_prediction()
                         prediction_type = "none"
                         previous_start_time = get_last_gamestart()
@@ -404,7 +404,7 @@ if __name__ =="__main__":
             starttime = time.time()
             while True:
                 if previous_start_time != get_last_gamestart():
-                    if int(time.time() - starttime) >= 125:
+                    if int(time.time() - starttime) >= prediction_window:
                         if get_latest_damage() >= x:
                             close_prediction(1)
                             prediction_type = "none"
@@ -417,7 +417,7 @@ if __name__ =="__main__":
                             previous_start_time = get_last_gamestart()
                             print("closed damage prediction")
                             break
-                    elif int(time.time() - starttime) < 125:
+                    elif int(time.time() - starttime) < prediction_window:
                         cancel_prediction()
                         prediction_type = "none"
                         previous_start_time = get_last_gamestart()
