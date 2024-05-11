@@ -14,11 +14,15 @@ from urllib.parse import urlparse, parse_qs
 import pyperclip
 
 client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
-client_secret = "7w7ouwrd9qzbpecuzz79d7f0cxz1ew"  #twitch API client secret
 broadcaster = "" #channel the commands are run in
 origin = ""  #origin username of the tracked player
 twitch_OAuth = "user_oauth.csv"
 prediction_window = 120
+
+with open ('client_secret.csv') as cs: #twitch API client secret
+    reader = csv.reader(cs)
+    for row in reader:
+        client_secret = row[0]
 
 with open ('ALS_APIkey.csv') as keyfile: #import Apexlegendsstatus api key
     reader = csv.reader(keyfile)
