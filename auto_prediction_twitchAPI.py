@@ -29,8 +29,7 @@ with open ('ALS_APIkey.csv') as keyfile: #import Apexlegendsstatus api key
     for row in reader:
         ALS_API_key = row[0]
         
-prediction_types = ["kills"#, "rp", "damage", "win"
-                    ]
+prediction_types = ["kills", "rp", "damage", "win"]
 
 ###HANDLING TWITCH AUTHORIZATION
 def get_OAuth_token(client_id, client_secret): #OAuth token to grant auto-predictions access to twitch API
@@ -416,7 +415,13 @@ if __name__ =="__main__":
             while True:
                 if previous_start_time != get_last_gamestart():
                     if int(time.time() - starttime) >= (prediction_window + 45):
-                        if get_latest_kills() >= x:
+                        if get_latest_kills() == "not found":
+                            cancel_prediction()
+                            prediction_type = "none"
+                            previous_start_time = get_last_gamestart()
+                            print("prediction cancelled - kills not found - equip legend kills tracker")
+                            break
+                        elif get_latest_kills() >= x:
                             close_prediction(1)
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
@@ -429,12 +434,6 @@ if __name__ =="__main__":
                             previous_start_time = get_last_gamestart()
                             print("closed kill prediction - 2")
                             time.sleep(10)
-                            break
-                        elif get_latest_kills() == "not found":
-                            cancel_prediction()
-                            prediction_type = "none"
-                            previous_start_time = get_last_gamestart()
-                            print("prediction cancelled - kills not found - equip legend kills tracker")
                             break
                     elif int(time.time() - starttime) < (prediction_window + 45):
                         cancel_prediction()
@@ -484,7 +483,13 @@ if __name__ =="__main__":
             while True:
                 if previous_start_time != get_last_gamestart():
                     if int(time.time() - starttime) >= (prediction_window + 45):
-                        if get_latest_damage() >= x:
+                        if get_latest_damage() == "not found":
+                            cancel_prediction()
+                            prediction_type = "none"
+                            previous_start_time = get_last_gamestart()
+                            print("prediction cancelled - damage not found - equip legend damage tracker")
+                            break
+                        elif get_latest_damage() >= x:
                             close_prediction(1)
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
@@ -498,11 +503,6 @@ if __name__ =="__main__":
                             print("closed damage prediction - 2")
                             time.sleep(10)
                             break
-                        elif get_latest_damage() == "not found":
-                            cancel_prediction()
-                            prediction_type = "none"
-                            previous_start_time = get_last_gamestart()
-                            print("prediction cancelled - damage not found - equip legend damage tracker")
                     elif int(time.time() - starttime) < (prediction_window + 45):
                         cancel_prediction()
                         prediction_type = "none"
@@ -520,7 +520,13 @@ if __name__ =="__main__":
             while True:
                 if previous_start_time != get_last_gamestart():
                     if int(time.time() - starttime) >= (prediction_window + 45):
-                        if get_latest_win() == 1:
+                        if get_latest_win() == "not found":
+                            cancel_prediction()
+                            prediction_type = "none"
+                            previous_start_time = get_last_gamestart()
+                            print("prediction cancelled - wins not found - equip lifetime kills banner")
+                            break
+                        elif get_latest_win() == 1:
                             close_prediction(1)
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
@@ -534,11 +540,6 @@ if __name__ =="__main__":
                             print("closed win prediction - 2")
                             time.sleep(10)
                             break
-                        elif get_latest_win() == "not found":
-                            cancel_prediction()
-                            prediction_type = "none"
-                            previous_start_time = get_last_gamestart()
-                            print("prediction cancelled - wins not found - equip lifetime kills banner")
                     elif int(time.time() - starttime) < (prediction_window + 45):
                         cancel_prediction()
                         prediction_type = "none"
