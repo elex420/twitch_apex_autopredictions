@@ -14,7 +14,7 @@ from urllib.parse import urlparse, parse_qs
 import pyperclip
 
 client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
-broadcaster = "elex420" #channel the commands are run in
+broadcaster = "" #channel the commands are run in
 origin = ""  #origin username of the tracked player
 twitch_OAuth = "user_oauth.csv"
 prediction_window = 120
@@ -29,7 +29,7 @@ with open ('ALS_APIkey.csv') as keyfile: #import Apexlegendsstatus api key
     for row in reader:
         ALS_API_key = row[0]
         
-prediction_types = ["kills", "rp", "damage"]
+prediction_types = ["kills", "rp", "damage", "win"]
 
 ###HANDLING TWITCH AUTHORIZATION
 def get_OAuth_token(client_id, client_secret): #OAuth token to grant auto-predictions access to twitch API
@@ -201,6 +201,34 @@ def setup_damage_prediction(): #setup returns value to bet on (x), prediction id
     
     return x, prediction_id, outcome1_id, outcome2_id
 
+def randomise_win_prediction(): 
+    title = "Win next game?"
+    outcome1 = "yes"
+    outcome2 = "no"
+    
+    return title, outcome1, outcome2
+
+def setup_win_prediction(): #setup returns value to bet on (x), prediction id and outcome-id's
+    title, outcome1, outcome2 = randomise_win_prediction()
+    url = 'https://api.twitch.tv/helix/predictions'
+    headers = {
+        'Authorization': f'Bearer {user_OAuth_token}',
+        'Client-ID': client_id,
+        'Content-Type': 'application/json'
+        }
+    data = {
+        'broadcaster_id': streamer_id,
+        'title': title,
+        'outcomes': [{"title": outcome1}, {"title": outcome2}],
+        'prediction_window': prediction_window
+    }
+    response = requests.post(url, headers=headers, json=data)
+    prediction_id = response.json()['data'][0]['id']
+    outcome1_id = response.json()['data'][0]['outcomes'][0]['id']
+    outcome2_id = response.json()['data'][0]['outcomes'][1]['id']
+    
+    return prediction_id, outcome1_id, outcome2_id
+
 def get_prediction_id():
     url = 'https://api.twitch.tv/helix/predictions'
     headers = {
@@ -288,6 +316,25 @@ def get_latest_damage():
            
    return last_game_kills  
 
+def get_latest_win():
+   url = "https://api.mozambiquehe.re/games"
+   params = {
+       'auth': ALS_API_key,
+       'uid': uid,
+       'limit': 1
+       }
+   response = requests.get(url, params=params)
+   
+   data = response.json()[0]['gameData']
+   
+   for item in data:
+       if item['key'] == 'career_wins':
+           last_game_win = item['value']
+       else: 
+           None
+           
+   return last_game_win
+
 def close_prediction(outcome):
     if outcome == 1:
         url = 'https://api.twitch.tv/helix/predictions'
@@ -352,7 +399,6 @@ if __name__ =="__main__":
             print("kill prediction setup")
             x, prediction_id, outcome1_id, outcome2_id = setup_kill_prediction(user_OAuth_token, client_id, streamer_id, prediction_window)
             starttime = time.time()
-            time.sleep(120)
             while True:
                 if previous_start_time != get_last_gamestart():
                     if int(time.time() - starttime) >= (prediction_window + 45):
@@ -381,7 +427,6 @@ if __name__ =="__main__":
             print("rp prediction setup")
             x, prediction_id, outcome1_id, outcome2_id = setup_rp_prediction()
             starttime = time.time()
-            time.sleep(120)
             while True:
                 if previous_start_time != get_last_gamestart():
                     if int(time.time() - starttime) >= (prediction_window + 45):
@@ -410,7 +455,6 @@ if __name__ =="__main__":
             print("damage prediction setup")
             x, prediction_id, outcome1_id, outcome2_id = setup_damage_prediction()
             starttime = time.time()
-            time.sleep(120)
             while True:
                 if previous_start_time != get_last_gamestart():
                     if int(time.time() - starttime) >= (prediction_window + 45):
@@ -431,6 +475,34 @@ if __name__ =="__main__":
                         prediction_type = "none"
                         previous_start_time = get_last_gamestart()
                         print("cancelled damage prediction")
+                        break
+                else:
+                    time.sleep(30)
+                    
+        elif "win" in prediction_type:
+            print("win prediction setup")
+            prediction_id, outcome1_id, outcome2_id = setup_win_prediction()
+            starttime = time.time()
+            while True:
+                if previous_start_time != get_last_gamestart():
+                    if int(time.time() - starttime) >= (prediction_window + 45):
+                        if get_latest_win() == 1:
+                            close_prediction(1)
+                            prediction_type = "none"
+                            previous_start_time = get_last_gamestart()
+                            print("closed win prediction - 1")
+                            break
+                        elif get_latest_win() == 0:
+                            close_prediction(2)
+                            prediction_type = "none"
+                            previous_start_time = get_last_gamestart()
+                            print("closed win prediction - 2")
+                            break
+                    elif int(time.time() - starttime) < (prediction_window + 45):
+                        cancel_prediction()
+                        prediction_type = "none"
+                        previous_start_time = get_last_gamestart()
+                        print("cancelled win prediction")
                         break
                 else:
                     time.sleep(30)
