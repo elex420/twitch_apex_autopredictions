@@ -109,10 +109,15 @@ def get_broadcaster_id(broadcaster, OAuth_token, client_id): #get broadcaster tw
         return None
 
 ###HANDLING PREDICTION LOGIC    
-def choose_random_prediction(): #randomly select type of next prediction
-    prediction_type = random.choice(prediction_types)
+def choose_random_prediction(): #randomly return type of next prediction, but not the one from the game before
+    while True:
+        prediction_type = random.choice(prediction_types)
+        if prediction_type == last_prediction:
+            continue
+        elif prediction_type != last_prediction:
+            
+            return prediction_type
     
-    return prediction_type
 
 def randomise_kill_prediction(): #randomise the kill values to bet on
     x = int(random.randrange(3, 10, 1))
@@ -397,6 +402,7 @@ if __name__ =="__main__":
         prediction_type = choose_random_prediction()
         if "kills" in prediction_type:
             print("kill prediction setup")
+            last_prediction = prediction_type
             x, prediction_id, outcome1_id, outcome2_id = setup_kill_prediction(user_OAuth_token, client_id, streamer_id, prediction_window)
             starttime = time.time()
             while True:
@@ -407,12 +413,14 @@ if __name__ =="__main__":
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
                             print("closed kill prediction - 1")
+                            time.sleep(10)
                             break
                         elif get_latest_kills() <x:
                             close_prediction(2)
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
                             print("closed kill prediction - 2")
+                            time.sleep(10)
                             break
                     elif int(time.time() - starttime) < (prediction_window + 45):
                         cancel_prediction()
@@ -425,6 +433,7 @@ if __name__ =="__main__":
                         
         elif "rp" in prediction_type:
             print("rp prediction setup")
+            last_prediction = prediction_type
             x, prediction_id, outcome1_id, outcome2_id = setup_rp_prediction()
             starttime = time.time()
             while True:
@@ -435,6 +444,7 @@ if __name__ =="__main__":
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
                             print("closed rp prediction - 1")
+                            time.sleep(10)
                             break
                         elif get_rp_change() < x:
                             close_prediction(2)
@@ -447,12 +457,14 @@ if __name__ =="__main__":
                         prediction_type = "none"
                         previous_start_time = get_last_gamestart()
                         print("cancelled rp prediction")
+                        time.sleep(10)
                         break
                 else:
                     time.sleep(30)
         
         elif "damage" in prediction_type:
             print("damage prediction setup")
+            last_prediction = prediction_type
             x, prediction_id, outcome1_id, outcome2_id = setup_damage_prediction()
             starttime = time.time()
             while True:
@@ -463,12 +475,14 @@ if __name__ =="__main__":
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
                             print("closed damage prediction - 1")
+                            time.sleep(10)
                             break
                         elif get_latest_damage() < x:
                             close_prediction(2)
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
                             print("closed damage prediction - 2")
+                            time.sleep(10)
                             break
                     elif int(time.time() - starttime) < (prediction_window + 45):
                         cancel_prediction()
@@ -481,6 +495,7 @@ if __name__ =="__main__":
                     
         elif "win" in prediction_type:
             print("win prediction setup")
+            last_prediction = prediction_type
             prediction_id, outcome1_id, outcome2_id = setup_win_prediction()
             starttime = time.time()
             while True:
@@ -491,12 +506,14 @@ if __name__ =="__main__":
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
                             print("closed win prediction - 1")
+                            time.sleep(10)
                             break
                         elif get_latest_win() == 0:
                             close_prediction(2)
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
                             print("closed win prediction - 2")
+                            time.sleep(10)
                             break
                     elif int(time.time() - starttime) < (prediction_window + 45):
                         cancel_prediction()
@@ -506,6 +523,7 @@ if __name__ =="__main__":
                         break
                 else:
                     time.sleep(30)
+        
         else:
             continue
                 
