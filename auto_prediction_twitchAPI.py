@@ -11,13 +11,13 @@ import requests
 import random
 from requests_oauthlib import OAuth2Session
 from urllib.parse import urlparse, parse_qs
-import pyperclip
+from pyperclip import copy
 
 client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
-broadcaster = "" #channel the commands are run in
-origin = ""  #origin username of the tracked player
+broadcaster = "elex420" #channel the commands are run in
+origin = "gdolphin"  #origin username of the tracked player
 twitch_OAuth = "user_oauth.csv"
-prediction_window = 120
+prediction_window = 300
 
 with open ('client_secret.csv') as cs: #twitch API client secret
     reader = csv.reader(cs)
@@ -29,7 +29,8 @@ with open ('ALS_APIkey.csv') as keyfile: #import Apexlegendsstatus api key
     for row in reader:
         ALS_API_key = row[0]
         
-prediction_types = ["kills", "rp", "damage", "win"]
+prediction_types = ["kills"#, "rp", "damage", "win"
+                    ]
 
 ###HANDLING TWITCH AUTHORIZATION
 def get_OAuth_token(client_id, client_secret): #OAuth token to grant auto-predictions access to twitch API
@@ -47,7 +48,7 @@ def get_OAuth_token(client_id, client_secret): #OAuth token to grant auto-predic
 def get_user_OAuth_token(client_id): #get user OAuth token
     twitch = OAuth2Session(client_id, redirect_uri="https://localhost", scope = ["channel:moderate", "user:read:email", "channel:read:predictions", "channel:manage:predictions"])
     authorization_url, _ = twitch.authorization_url("https://id.twitch.tv/oauth2/authorize")
-    pyperclip.copy(authorization_url)
+    copy(authorization_url)
     print("Authorization URL copied to clipboard. Paste it in your browser")
     redirect_response = input("Paste the full redirect URL here: ")
     parsed_url = urlparse(redirect_response)
@@ -130,7 +131,8 @@ def choose_random_prediction(): #randomly return type of next prediction, but no
         elif prediction_type != last_prediction:
             
             return prediction_type
-    
+
+#randomising values to gamble on    
 def randomise_kill_prediction(): #randomise the kill values to bet on
     x = int(random.randrange(3, 10, 1))
     title = "How many kills next game?"
@@ -162,6 +164,7 @@ def randomise_win_prediction():
     
     return title, outcome1, outcome2
 
+#communicating with twitch api to setup/close predictions
 def setup_kill_prediction(user_OAuth_token, client_id, streamer_id, prediction_window): #setup returns value to bet on (x), prediction id and outcome-id's
     title, outcome1, outcome2, x = randomise_kill_prediction()
     url = 'https://api.twitch.tv/helix/predictions'
@@ -330,8 +333,9 @@ def get_latest_kills(): #returns amount of kills found in latest game data file
    for item in data:
        if item['key'] == 'kills':
            last_game_kills = item['value']
-       else: 
-           None
+           break
+       else:
+           last_game_kills = "not found"
            
    return last_game_kills  
 
@@ -360,11 +364,12 @@ def get_latest_damage(): #returns damage found in latest game data file
    
    for item in data:
        if item['key'] == 'damage':
-           last_game_kills = item['value']
+           last_game_damage = item['value']
+           break
        else: 
-           None
+           last_game_damage = "not found"
            
-   return last_game_kills  
+   return last_game_damage  
 
 def get_latest_win(): #returns wins found in latest game data file
    url = "https://api.mozambiquehe.re/games"
@@ -380,17 +385,19 @@ def get_latest_win(): #returns wins found in latest game data file
    for item in data:
        if item['key'] == 'career_wins':
            last_game_win = item['value']
+           break
        else: 
-           None
+           last_game_win = "not found"
            
    return last_game_win
 
 
 if __name__ =="__main__":
-    OAuth_token = get_OAuth_token(client_id, client_secret)
-    streamer_id = get_broadcaster_id(broadcaster, OAuth_token, client_id)
+    OAuth_token = get_OAuth_token(client_id, client_secret) #authorizing this script
+    streamer_id = get_broadcaster_id(broadcaster, OAuth_token, client_id) #
     user_OAuth_token = check_user_OAuth_token()
     uid = get_als_uid()
+    last_prediction = "none"
     prediction_type = choose_random_prediction()
     previous_start_time = get_last_gamestart()
     try:
@@ -422,6 +429,12 @@ if __name__ =="__main__":
                             previous_start_time = get_last_gamestart()
                             print("closed kill prediction - 2")
                             time.sleep(10)
+                            break
+                        elif get_latest_kills() == "not found":
+                            cancel_prediction()
+                            prediction_type = "none"
+                            previous_start_time = get_last_gamestart()
+                            print("prediction cancelled - kills not found - equip legend kills tracker")
                             break
                     elif int(time.time() - starttime) < (prediction_window + 45):
                         cancel_prediction()
@@ -485,6 +498,11 @@ if __name__ =="__main__":
                             print("closed damage prediction - 2")
                             time.sleep(10)
                             break
+                        elif get_latest_damage() == "not found":
+                            cancel_prediction()
+                            prediction_type = "none"
+                            previous_start_time = get_last_gamestart()
+                            print("prediction cancelled - damage not found - equip legend damage tracker")
                     elif int(time.time() - starttime) < (prediction_window + 45):
                         cancel_prediction()
                         prediction_type = "none"
@@ -516,6 +534,11 @@ if __name__ =="__main__":
                             print("closed win prediction - 2")
                             time.sleep(10)
                             break
+                        elif get_latest_win() == "not found":
+                            cancel_prediction()
+                            prediction_type = "none"
+                            previous_start_time = get_last_gamestart()
+                            print("prediction cancelled - wins not found - equip lifetime kills banner")
                     elif int(time.time() - starttime) < (prediction_window + 45):
                         cancel_prediction()
                         prediction_type = "none"
