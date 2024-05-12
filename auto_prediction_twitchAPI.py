@@ -108,7 +108,20 @@ def get_broadcaster_id(broadcaster, OAuth_token, client_id): #get broadcaster tw
     else:
         return None
 
-###HANDLING PREDICTION LOGIC    
+###HANDLING PREDICTION LOGIC - TWITCH API  
+def get_prediction_id():
+    url = 'https://api.twitch.tv/helix/predictions'
+    headers = {
+        'Authorization': f'Bearer {user_OAuth_token}',
+        'Client-ID': client_id,
+        }
+    params = {
+        'broadcaster_id': streamer_id,
+        }
+    response = requests.get(url, headers=headers, params=params)
+    
+    return(response.json()['data'][0]['id'])
+
 def choose_random_prediction(): #randomly return type of next prediction, but not the one from the game before
     while True:
         prediction_type = random.choice(prediction_types)
@@ -118,7 +131,6 @@ def choose_random_prediction(): #randomly return type of next prediction, but no
             
             return prediction_type
     
-
 def randomise_kill_prediction(): #randomise the kill values to bet on
     x = int(random.randrange(3, 10, 1))
     title = "How many kills next game?"
@@ -126,6 +138,29 @@ def randomise_kill_prediction(): #randomise the kill values to bet on
     outcome2 = "less than " + str(x)
     
     return title, outcome1, outcome2, x
+
+def randomise_rp_prediction(): #randomise the rp values to bet on
+    x = random.randrange(50, 200, 10)
+    title = "How much rp will be gained next game?"
+    outcome1 = str(x) + " or more"
+    outcome2 = "less than " + str(x)
+    
+    return title, outcome1, outcome2, x
+
+def randomise_damage_prediction(): #randomise the kill values to bet on
+    x = int(random.randrange(1200, 2500, 50))
+    title = "How much damage next game?"
+    outcome1 = str(x) + " or more"
+    outcome2 = "less than " + str(x)
+    
+    return title, outcome1, outcome2, x
+
+def randomise_win_prediction(): 
+    title = "Win next game?"
+    outcome1 = "yes"
+    outcome2 = "no"
+    
+    return title, outcome1, outcome2
 
 def setup_kill_prediction(user_OAuth_token, client_id, streamer_id, prediction_window): #setup returns value to bet on (x), prediction id and outcome-id's
     title, outcome1, outcome2, x = randomise_kill_prediction()
@@ -148,14 +183,6 @@ def setup_kill_prediction(user_OAuth_token, client_id, streamer_id, prediction_w
     
     return x, prediction_id, outcome1_id, outcome2_id
 
-def randomise_rp_prediction(): #randomise the rp values to bet on
-    x = random.randrange(50, 200, 10)
-    title = "How much rp will be gained next game?"
-    outcome1 = str(x) + " or more"
-    outcome2 = "less than " + str(x)
-    
-    return title, outcome1, outcome2, x
-
 def setup_rp_prediction(): #setup returns value to bet on (x), prediction id and outcome-id's
     title, outcome1, outcome2, x = randomise_rp_prediction()
     url = 'https://api.twitch.tv/helix/predictions'
@@ -176,14 +203,6 @@ def setup_rp_prediction(): #setup returns value to bet on (x), prediction id and
     outcome2_id = response.json()['data'][0]['outcomes'][1]['id']
     
     return x, prediction_id, outcome1_id, outcome2_id
-
-def randomise_damage_prediction(): #randomise the kill values to bet on
-    x = int(random.randrange(1200, 2500, 50))
-    title = "How much damage next game?"
-    outcome1 = str(x) + " or more"
-    outcome2 = "less than " + str(x)
-    
-    return title, outcome1, outcome2, x
 
 def setup_damage_prediction(): #setup returns value to bet on (x), prediction id and outcome-id's
     title, outcome1, outcome2, x = randomise_damage_prediction()
@@ -206,13 +225,6 @@ def setup_damage_prediction(): #setup returns value to bet on (x), prediction id
     
     return x, prediction_id, outcome1_id, outcome2_id
 
-def randomise_win_prediction(): 
-    title = "Win next game?"
-    outcome1 = "yes"
-    outcome2 = "no"
-    
-    return title, outcome1, outcome2
-
 def setup_win_prediction(): #setup returns value to bet on (x), prediction id and outcome-id's
     title, outcome1, outcome2 = randomise_win_prediction()
     url = 'https://api.twitch.tv/helix/predictions'
@@ -234,113 +246,7 @@ def setup_win_prediction(): #setup returns value to bet on (x), prediction id an
     
     return prediction_id, outcome1_id, outcome2_id
 
-def get_prediction_id():
-    url = 'https://api.twitch.tv/helix/predictions'
-    headers = {
-        'Authorization': f'Bearer {user_OAuth_token}',
-        'Client-ID': client_id,
-        }
-    params = {
-        'broadcaster_id': streamer_id,
-        }
-    response = requests.get(url, headers=headers, params=params)
-    
-    return(response.json()['data'][0]['id'])
-
-def get_latest_kills():
-   url = "https://api.mozambiquehe.re/games"
-   params = {
-       'auth': ALS_API_key,
-       'uid': uid,
-       'limit': 1
-       }
-   response = requests.get(url, params=params)
-   
-   data = response.json()[0]['gameData']
-   
-   for item in data:
-       if item['key'] == 'kills':
-           last_game_kills = item['value']
-       else: 
-           None
-           
-   return last_game_kills  
-
-def get_last_gamestart(): 
-    url = "https://api.mozambiquehe.re/games"
-    params = {
-        'auth': ALS_API_key,
-        'uid': uid,
-        'limit': 2
-        }
-    response = requests.get(url, params=params)
-    last_game_start = response.json()[0]['gameStartTimestamp']
-            
-    return last_game_start  
-
-def get_als_uid():
-    url = "https://api.mozambiquehe.re/nametouid"
-    params = {
-        "auth": "938949c327a9cdd159327e6b8aeb3d7e",
-        "player": f"{origin}",
-        "platform": "PC"
-    }
-    response = requests.get(url, params=params)
-    uid = response.json()['uid']
-    
-    return uid
-
-def get_rp_change():
-    url = "https://api.mozambiquehe.re/games"
-    params = {
-        'auth': ALS_API_key,
-        'uid': uid,
-        'limit': 1
-        }
-    response = requests.get(url, params=params)
-    rp_change = response.json()[0]['BRScoreChange']
-    
-    return rp_change
-
-def get_latest_damage():
-   url = "https://api.mozambiquehe.re/games"
-   params = {
-       'auth': ALS_API_key,
-       'uid': uid,
-       'limit': 1
-       }
-   response = requests.get(url, params=params)
-   
-   data = response.json()[0]['gameData']
-   
-   for item in data:
-       if item['key'] == 'damage':
-           last_game_kills = item['value']
-       else: 
-           None
-           
-   return last_game_kills  
-
-def get_latest_win():
-   url = "https://api.mozambiquehe.re/games"
-   params = {
-       'auth': ALS_API_key,
-       'uid': uid,
-       'limit': 1
-       }
-   response = requests.get(url, params=params)
-   
-   data = response.json()[0]['gameData']
-   
-   for item in data:
-       if item['key'] == 'career_wins':
-           last_game_win = item['value']
-       else: 
-           None
-           
-   return last_game_win
-
-def close_prediction(outcome):
+def close_prediction(outcome): #resolve prediction; outcome 1 = believers, outcome 2 = doubters
     if outcome == 1:
         url = 'https://api.twitch.tv/helix/predictions'
         headers = {
@@ -370,7 +276,7 @@ def close_prediction(outcome):
             }
         requests.patch(url, headers=headers, json=data)
 
-def cancel_prediction():
+def cancel_prediction(): #cancel prediction and return points
     url = 'https://api.twitch.tv/helix/predictions'
     headers = {
         'Authorization': f'Bearer {user_OAuth_token}',
@@ -384,7 +290,102 @@ def cancel_prediction():
     response = requests.patch(url, headers=headers, json=data)
     
     return(response)
+
+### GETTING GAME DATA FROM APEX LEGENDS API
+def get_last_gamestart(): #returns start timestamp of the latest gamedata file
+    url = "https://api.mozambiquehe.re/games"
+    params = {
+        'auth': ALS_API_key,
+        'uid': uid,
+        'limit': 2
+        }
+    response = requests.get(url, params=params)
+    last_game_start = response.json()[0]['gameStartTimestamp']
+            
+    return last_game_start  
+      
+def get_als_uid(): #returns ALS uid of the player input into "origin"
+    url = "https://api.mozambiquehe.re/nametouid"
+    params = {
+        "auth": "938949c327a9cdd159327e6b8aeb3d7e",
+        "player": f"{origin}",
+        "platform": "PC"
+    }
+    response = requests.get(url, params=params)
+    uid = response.json()['uid']
     
+    return uid
+
+def get_latest_kills(): #returns amount of kills found in latest game data file
+   url = "https://api.mozambiquehe.re/games"
+   params = {
+       'auth': ALS_API_key,
+       'uid': uid,
+       'limit': 1
+       }
+   response = requests.get(url, params=params)
+   
+   data = response.json()[0]['gameData']
+   
+   for item in data:
+       if item['key'] == 'kills':
+           last_game_kills = item['value']
+       else: 
+           None
+           
+   return last_game_kills  
+
+def get_rp_change(): #returns rp change found in latest game data file
+    url = "https://api.mozambiquehe.re/games"
+    params = {
+        'auth': ALS_API_key,
+        'uid': uid,
+        'limit': 1
+        }
+    response = requests.get(url, params=params)
+    rp_change = response.json()[0]['BRScoreChange']
+    
+    return rp_change
+
+def get_latest_damage(): #returns damage found in latest game data file
+   url = "https://api.mozambiquehe.re/games"
+   params = {
+       'auth': ALS_API_key,
+       'uid': uid,
+       'limit': 1
+       }
+   response = requests.get(url, params=params)
+   
+   data = response.json()[0]['gameData']
+   
+   for item in data:
+       if item['key'] == 'damage':
+           last_game_kills = item['value']
+       else: 
+           None
+           
+   return last_game_kills  
+
+def get_latest_win(): #returns wins found in latest game data file
+   url = "https://api.mozambiquehe.re/games"
+   params = {
+       'auth': ALS_API_key,
+       'uid': uid,
+       'limit': 1
+       }
+   response = requests.get(url, params=params)
+   
+   data = response.json()[0]['gameData']
+   
+   for item in data:
+       if item['key'] == 'career_wins':
+           last_game_win = item['value']
+       else: 
+           None
+           
+   return last_game_win
+
+
 if __name__ =="__main__":
     OAuth_token = get_OAuth_token(client_id, client_secret)
     streamer_id = get_broadcaster_id(broadcaster, OAuth_token, client_id)
