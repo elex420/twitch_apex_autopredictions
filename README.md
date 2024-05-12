@@ -5,7 +5,7 @@ This is a simple python script. Once you download this repo you can run it from 
 Make sure that the libraries imported at the beginning of the script are installed in your environment.  
 
 ## 2. First setup
-For this script to work you will need to be t3 patreon sub to hugo as it uses his matchhistory API -> [link](https://www.patreon.com/hugodev/posts)  
+For this script to work you will need to be [t3 patreon sub to hugo](https://www.patreon.com/hugodev/posts) as it uses his matchhistory API.  
 Once you recieve your API key save it in ALS_APIkey.csv - make sure to remove the dummy text in the file first.  
 Then you will also need the client_secret key. Message elex420 for your key (see contact information below).  
 Then you need to specify the variables `broadcaster` and `origin` in lines 18 and 19.  
@@ -24,7 +24,7 @@ Once you have gone through this process the twitch-OAuth keys will be fetched fr
 ## 3. Usage
 Once the first setup is done you can run the script either from your console or your preferred IDE.  
 Default prediction window is 2 minutes.  
-*Make sure the player you are tracking has BR Damage and Apex Kills trackers equipped on all the legends they play.* Data can only be fetched from equipped banners.  
+*Make sure the player you are tracking has BR Damage, Apex Kills and Career Wins trackers equipped on all the legends they play.* Data can only be fetched from equipped banners.  
 Currently predictions on damage, rp gained and kills are possible. If you want to run predictions on pubs remove `"rp",` from `prediction_types` in line 26.  
 It will automatically set up randomised predictions for your viewers to bet on and close them or cancel them, if you die before the prediction has been closed.  
 Upon closure or cancellation another prediction will be set up.   
