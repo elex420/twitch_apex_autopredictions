@@ -6,14 +6,12 @@ Make sure that the libraries imported at the beginning of the script are install
 
 ## 2. First setup
 For this script to work you will need to be [t3 patreon sub to hugo](https://www.patreon.com/hugodev/posts) as it uses his matchhistory API.  
-Once you recieve your API key save it in ALS_APIkey.csv - make sure to remove the dummy text in the file first.  
-Then you will also need the client_secret key. Message elex420 for your key (see contact information below).  
-Then you need to specify the variables `broadcaster` and `origin` in lines 18 and 19.  
-`broadcaster` should be set to the twitch channel name that you want to run predictions in.  
-`origin` needs to be set to the origin username of the monitored player (streamer). You can get it from the players ApexLegendsStatus page.  
-You can also change the amount of time that the prediction is open to bet on. For that change `prediction_window` in line 20. Accepted values are 30, 60, 120, 300, 600, 900, 1200 or 1800 seconds. This should be chosen depending on the length of queue times.  
+Once you recieve your ApexLegendsAPI key save it in ALS_APIkey.csv - make sure to remove the dummy text in the file first.  
+Then you will also need the client_secret key. Message elex420 for your key (see contact information below). 
+You can change the amount of time that the prediction is open to bet on. For that change `prediction_window` in line 20. Accepted values are 30, 60, 120, 300, 600, 900, 1200 or 1800 seconds. This should be chosen depending on the length of queue times.  
 
-Now you can run the script. **THIS NEXT PART HAS TO BE DONE BY THE CHANNEL OWNER.** If you are a moderator running the predictions for a streamer you have to send them the Authorization URL and they will have to send the redirect link back to you.  
+Now you can run the script. You will be asked to input the twitch channel name that you want to run predictions in as well as the origin username of the player that you want to track.  
+*THIS NEXT PART HAS TO BE DONE BY THE CHANNEL OWNER.* If you are a moderator running the predictions for a streamer you have to send them the Authorization URL and they will have to send the redirect link back to you.  
 On the first run you will be met with your console telling you `Authorization URL copied to clipboard. Paste it in your browser`.  
 Do as you are told and open the link. You will get to the twitch-OAuth screen asking you to authorize the script to manage your channel predictions. Upon clicking "Authorize" you will be redirected to a dead link starting with `localhost://`.  
 Copy this link to your clipboard. In your console you will be asked to `Paste the full redirect URl here:`. Paste the link and press Enter.  
@@ -22,11 +20,10 @@ This fetches an access and a refresh key from twitch. They will be saved to user
 Once you have gone through this process the twitch-OAuth keys will be fetched from the aforementioned .csv and automatically update if needed.
 
 ## 3. Usage
-Once the first setup is done you can run the script either from your console or your preferred IDE.  
-Default prediction window is 2 minutes.  
-*Make sure the player you are tracking has BR Damage, Apex Kills and Career Wins trackers equipped on all the legends they play.* Data can only be fetched from equipped banners.  
-Currently predictions on damage, rp gained and kills are possible. If you want to run predictions on pubs remove `"rp",` from `prediction_types` in line 26.  
-It will automatically set up randomised predictions for your viewers to bet on and close them or cancel them, if you die before the prediction has been closed.  
+Once the first setup is done you can run the script either from your console or your preferred IDE. Every time you run the script it will ask you to input the twitch channel and the origin username.  
+*Make sure the player you are tracking has BR Damage, Apex Kills and Apex Wins trackers equipped on all the legends they play.* Data can only be fetched from equipped banners.  
+Currently predictions on damage, rp gained, kills and wins are possible. If you want to run predictions on pubs remove `"rp",` from `prediction_types` in line 26.  
+It will automatically set up randomised predictions for your viewers to bet on and either close them or cancel them, if you die before the prediction has been closed.  
 Upon closure or cancellation another prediction will be set up.   
 
 ## 4. Contact  
