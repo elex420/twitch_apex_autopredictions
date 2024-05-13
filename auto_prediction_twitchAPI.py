@@ -330,7 +330,7 @@ def get_latest_kills(): #returns amount of kills found in latest game data file
    data = response.json()[0]['gameData']
    
    for item in data:
-       if item['key'] == 'kills':
+       if "kills" in item['key'] and "arena" not in item['key']:
            last_game_kills = item['value']
            break
        else:
@@ -362,7 +362,7 @@ def get_latest_damage(): #returns damage found in latest game data file
    data = response.json()[0]['gameData']
    
    for item in data:
-       if item['key'] == 'damage':
+       if "damage" in item['key'] and "arena" not in item['key']:
            last_game_damage = item['value']
            break
        else: 
@@ -382,7 +382,7 @@ def get_latest_win(): #returns wins found in latest game data file
    data = response.json()[0]['gameData']
    
    for item in data:
-       if item['key'] == 'career_wins':
+       if "win" in item['key'] and "arena" not in item['key']:
            last_game_win = item['value']
            break
        else: 
@@ -524,7 +524,7 @@ if __name__ =="__main__":
                             cancel_prediction()
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
-                            print("prediction cancelled - wins not found - equip lifetime kills banner")
+                            print("prediction cancelled - wins not found - equip legend wins tracker")
                             break
                         elif get_latest_win() == 1:
                             close_prediction(1)
