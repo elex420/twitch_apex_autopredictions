@@ -14,8 +14,8 @@ from urllib.parse import urlparse, parse_qs
 from pyperclip import copy
 
 client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
-broadcaster = "elex420" #channel the commands are run in
-origin = "Alliance_Unlucky"  #origin username of the tracked player
+broadcaster = input("What is the twitch channel name that you want to run predictions in? (confirm by hitting Enter) ") #channel the commands are run in
+origin = input("What is the origin username of the player you want to track? (confirm by hitting Enter) ")  #origin username of the tracked player
 twitch_OAuth = "user_oauth.csv"
 prediction_window = 300
 
