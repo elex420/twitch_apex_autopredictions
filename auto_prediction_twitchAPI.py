@@ -15,7 +15,7 @@ from pyperclip import copy
 
 client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
 broadcaster = "elex420" #channel the commands are run in
-origin = "gdolphin"  #origin username of the tracked player
+origin = "Alliance_Unlucky"  #origin username of the tracked player
 twitch_OAuth = "user_oauth.csv"
 prediction_window = 300
 
