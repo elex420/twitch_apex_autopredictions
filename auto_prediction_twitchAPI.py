@@ -362,7 +362,7 @@ def get_latest_damage(): #returns damage found in latest game data file
    data = response.json()[0]['gameData']
    
    for item in data:
-       if "damage" in item['key'] and "arena" not in item['key']:
+       if "damage" in item['key'] and "arena" not in item['key'] and "ultimate" not in item['key']:
            last_game_damage = item['value']
            break
        else: 
