@@ -14,10 +14,9 @@ from urllib.parse import urlparse, parse_qs
 from pyperclip import copy
 
 client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
-broadcaster = input("What is the twitch channel name that you want to run predictions in? (confirm by hitting Enter) ") #channel the commands are run in
-origin = input("What is the origin username of the player you want to track? (confirm by hitting Enter) ")  #origin username of the tracked player
 twitch_OAuth = "user_oauth.csv"
 prediction_window = 300
+prediction_types = ["kills", "rp", "damage", "win"]
 
 with open ('client_secret.csv') as cs: #twitch API client secret
     reader = csv.reader(cs)
@@ -29,7 +28,6 @@ with open ('ALS_APIkey.csv') as keyfile: #import Apexlegendsstatus api key
     for row in reader:
         ALS_API_key = row[0]
         
-prediction_types = ["kills", "rp", "damage", "win"]
 
 ###HANDLING TWITCH AUTHORIZATION
 def get_OAuth_token(client_id, client_secret): #OAuth token to grant auto-predictions access to twitch API
@@ -309,7 +307,7 @@ def get_last_gamestart(): #returns start timestamp of the latest gamedata file
 def get_als_uid(): #returns ALS uid of the player input into "origin"
     url = "https://api.mozambiquehe.re/nametouid"
     params = {
-        "auth": "938949c327a9cdd159327e6b8aeb3d7e",
+        "auth": ALS_API_key,
         "player": f"{origin}",
         "platform": "PC"
     }
@@ -392,6 +390,8 @@ def get_latest_win(): #returns wins found in latest game data file
 
 
 if __name__ =="__main__":
+    broadcaster = input("What is the twitch channel name that you want to run predictions in? (confirm by hitting Enter) ") #channel the commands are run in
+    origin = input("What is the origin username of the player you want to track? (confirm by hitting Enter) ")  #origin username of the tracked player
     OAuth_token = get_OAuth_token(client_id, client_secret) #authorizing this script
     streamer_id = get_broadcaster_id(broadcaster, OAuth_token, client_id) #
     user_OAuth_token = check_user_OAuth_token()
