@@ -16,7 +16,7 @@ from pyperclip import copy
 client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
 twitch_OAuth = "user_oauth.csv"
 prediction_window = 300
-prediction_types = ["kills", "rp", "damage", "win"]
+
 
 with open ('client_secret.csv') as cs: #twitch API client secret
     reader = csv.reader(cs)
@@ -392,6 +392,17 @@ def get_latest_win(): #returns wins found in latest game data file
 if __name__ =="__main__":
     broadcaster = input("What is the twitch channel name that you want to run predictions in? (confirm by hitting Enter) ") #channel the commands are run in
     origin = input("What is the origin username of the player you want to track? (confirm by hitting Enter) ")  #origin username of the tracked player
+    while True:
+        mode = input("Is ranked being played? (y/n) ")
+        if mode == "y" or mode == "yes":
+            prediction_types = ["kills", "rp", "damage", "win"]
+            break
+        elif mode == "n" or mode == "no":
+            prediction_types = ["kills", "damage", "win"]
+            break
+        else:
+            print("Invalid input. ")
+            continue
     OAuth_token = get_OAuth_token(client_id, client_secret) #authorizing this script
     streamer_id = get_broadcaster_id(broadcaster, OAuth_token, client_id) #
     user_OAuth_token = check_user_OAuth_token()
