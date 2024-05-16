@@ -30,7 +30,7 @@ with open ('ALS_APIkey.csv') as keyfile: #import Apexlegendsstatus api key
         
 
 ###HANDLING TWITCH AUTHORIZATION
-def get_OAuth_token(client_id, client_secret): #OAuth token to grant auto-predictions access to twitch API
+def get_app_OAuth_token(client_id, client_secret): #OAuth token to grant auto-predictions access to twitch API
     url = 'https://id.twitch.tv/oauth2/token'
     params = {
         'client_id': client_id,
@@ -403,7 +403,7 @@ if __name__ =="__main__":
         else:
             print("Invalid input. ")
             continue
-    OAuth_token = get_OAuth_token(client_id, client_secret) #authorizing this script
+    OAuth_token = get_app_OAuth_token(client_id, client_secret) #authorizing this script
     streamer_id = get_broadcaster_id(broadcaster, OAuth_token, client_id) #
     user_OAuth_token = check_user_OAuth_token()
     uid = get_als_uid()
