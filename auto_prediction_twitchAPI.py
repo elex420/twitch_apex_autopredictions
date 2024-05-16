@@ -317,24 +317,26 @@ def get_als_uid(): #returns ALS uid of the player input into "origin"
     return uid
 
 def get_latest_kills(): #returns amount of kills found in latest game data file
-   url = "https://api.mozambiquehe.re/games"
-   params = {
-       'auth': ALS_API_key,
-       'uid': uid,
-       'limit': 1
-       }
-   response = requests.get(url, params=params)
-   
-   data = response.json()[0]['gameData']
-   
-   for item in data:
-       if "kills" in item['key'] and "arena" not in item['key']:
-           last_game_kills = item['value']
-           break
-       else:
-           last_game_kills = "not found"
-           
-   return last_game_kills  
+    url = "https://api.mozambiquehe.re/games"
+    params = {
+        'auth': ALS_API_key,
+        'uid': uid,
+        'limit': 1
+        }
+    response = requests.get(url, params=params)
+
+    data = response.json()[0]['gameData']
+    if len(data) != 0:
+        for item in data:
+            if "kills" in item['key'] and "arena" not in item['key']:
+                last_game_kills = item['value']
+                break
+            else:
+                last_game_kills = "not found"
+    else:
+        last_game_kills = "not found"
+        
+    return last_game_kills  
 
 def get_rp_change(): #returns rp change found in latest game data file
     url = "https://api.mozambiquehe.re/games"
@@ -349,44 +351,48 @@ def get_rp_change(): #returns rp change found in latest game data file
     return rp_change
 
 def get_latest_damage(): #returns damage found in latest game data file
-   url = "https://api.mozambiquehe.re/games"
-   params = {
-       'auth': ALS_API_key,
-       'uid': uid,
-       'limit': 1
-       }
-   response = requests.get(url, params=params)
-   
-   data = response.json()[0]['gameData']
-   
-   for item in data:
-       if "damage" in item['key'] and "arena" not in item['key'] and "ultimate" not in item['key']:
-           last_game_damage = item['value']
-           break
-       else: 
-           last_game_damage = "not found"
-           
-   return last_game_damage  
+    url = "https://api.mozambiquehe.re/games"
+    params = {
+           'auth': ALS_API_key,
+           'uid': uid,
+           'limit': 5
+           }
+    response = requests.get(url, params=params)
+       
+    data = response.json()[0]['gameData']
+    if len(data) != 0:
+       for item in data:
+           if "damage" in item['key'] and "arena" not in item['key'] and "ultimate" not in item['key']:
+               last_game_damage = item['value']
+               break
+           else: 
+               last_game_damage = "not found"
+    else:
+         last_game_damage = "not found"
+              
+    return last_game_damage 
 
 def get_latest_win(): #returns wins found in latest game data file
-   url = "https://api.mozambiquehe.re/games"
-   params = {
-       'auth': ALS_API_key,
-       'uid': uid,
-       'limit': 1
-       }
-   response = requests.get(url, params=params)
-   
-   data = response.json()[0]['gameData']
-   
-   for item in data:
-       if "win" in item['key'] and "arena" not in item['key']:
-           last_game_win = item['value']
-           break
-       else: 
-           last_game_win = "not found"
-           
-   return last_game_win
+    url = "https://api.mozambiquehe.re/games"
+    params = {
+        'auth': ALS_API_key,
+        'uid': uid,
+        'limit': 1
+        }
+    response = requests.get(url, params=params)
+
+    data = response.json()[0]['gameData']
+    if len(data) != 0:
+        for item in data:
+            if "win" in item['key'] and "arena" not in item['key']:
+                last_game_win = item['value']
+                break
+            else: 
+                last_game_win = "not found"
+    else:
+        last_game_win = "not found"
+  
+    return last_game_win
 
 
 if __name__ =="__main__":
