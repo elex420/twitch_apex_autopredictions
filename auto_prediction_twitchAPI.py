@@ -43,19 +43,27 @@ def get_app_OAuth_token(client_id, client_secret): #OAuth token to grant auto-pr
     return data['access_token'] 
 
 def get_user_OAuth_token(client_id): #get user OAuth token
-    twitch = OAuth2Session(client_id, redirect_uri="https://localhost", scope = ["channel:moderate", "user:read:email", "channel:read:predictions", "channel:manage:predictions"])
+    twitch = OAuth2Session(client_id, redirect_uri="https://localhost", scope = ["channel:moderate", "user:read:email", 
+                                                                                 "channel:read:predictions", 
+                                                                                 "channel:manage:predictions"
+                                                                                 ]
+                           )
     authorization_url, _ = twitch.authorization_url("https://id.twitch.tv/oauth2/authorize")
     copy(authorization_url)
     print("Authorization URL copied to clipboard. Paste it in your browser")
     redirect_response = input("Paste the full redirect URL here: ")
     parsed_url = urlparse(redirect_response)
     authorization_code = parse_qs(parsed_url.query)['code'][0]
-    token = twitch.fetch_token("https://id.twitch.tv/oauth2/token", code=authorization_code, client_secret=client_secret, include_client_id=True)
+    token = twitch.fetch_token("https://id.twitch.tv/oauth2/token", 
+                               code=authorization_code, 
+                               client_secret=client_secret,
+                               include_client_id=True)
     access_token = token['access_token']
     refresh_token = token['refresh_token']
     with open(twitch_OAuth, "w") as tokens:
         writer = csv.writer(tokens)
         writer.writerow([access_token, refresh_token])
+    
     return access_token
 
 def check_user_OAuth_token(): #check twitch user OAuth token and refresh in case it's expired
