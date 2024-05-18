@@ -42,7 +42,7 @@ def get_app_OAuth_token(client_id, client_secret): #OAuth token to grant auto-pr
     
     return data['access_token'] 
 
-def get_user_OAuth_token(client_id): #get user OAuth token
+def get_user_OAuth_token(client_id): #get user OAuth token and write it to user_oauth.csv
     twitch = OAuth2Session(client_id, redirect_uri="https://localhost", scope = ["channel:moderate", "user:read:email", 
                                                                                  "channel:read:predictions", 
                                                                                  "channel:manage:predictions"
