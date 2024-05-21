@@ -251,6 +251,7 @@ def setup_win_prediction(): #setup returns value to bet on (x), prediction id an
     return prediction_id, outcome1_id, outcome2_id
 
 def close_prediction(outcome): #resolve prediction; outcome 1 = believers, outcome 2 = doubters
+    check_user_OAuth_token()
     if outcome == 1:
         url = 'https://api.twitch.tv/helix/predictions'
         headers = {
@@ -264,8 +265,9 @@ def close_prediction(outcome): #resolve prediction; outcome 1 = believers, outco
             'status': "RESOLVED",
             'winning_outcome_id': outcome1_id
             }
-        requests.patch(url, headers=headers, json=data)
-    if outcome == 2:
+        response = requests.patch(url, headers=headers, json=data)
+        print(response.json())
+    elif outcome == 2:
         url = 'https://api.twitch.tv/helix/predictions'
         headers = {
             'Authorization': f'Bearer {user_OAuth_token}',
@@ -278,7 +280,8 @@ def close_prediction(outcome): #resolve prediction; outcome 1 = believers, outco
             'status': "RESOLVED",
             'winning_outcome_id': outcome2_id
             }
-        requests.patch(url, headers=headers, json=data)
+        response = requests.patch(url, headers=headers, json=data)
+        print(response.json())
 
 def cancel_prediction(): #cancel prediction and return points
     url = 'https://api.twitch.tv/helix/predictions'
@@ -400,8 +403,8 @@ def get_latest_win(): #returns wins found in latest game data file
 
 
 if __name__ =="__main__":
-    broadcaster = input("What is the twitch channel name that you want to run predictions in? (confirm by hitting Enter) ") #channel the commands are run in
-    origin = input("What is the origin username of the player you want to track? (confirm by hitting Enter) ")  #origin username of the tracked player
+    broadcaster = input("What is the TWITCH CHANNEL name that you want to run predictions in? (confirm by hitting Enter) ") #channel the commands are run in
+    origin = input("What is the ORIGIN USERNAME of the player you want to track? (confirm by hitting Enter) ")  #origin username of the tracked player
     while True:
         mode = input("Is ranked being played? (y/n) ")
         if mode == "y" or mode == "yes":
