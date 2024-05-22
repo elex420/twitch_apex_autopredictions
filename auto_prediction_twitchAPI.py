@@ -259,7 +259,7 @@ def setup_win_prediction(): #setup returns value to bet on (x), prediction id an
     return prediction_id, outcome1_id, outcome2_id
 
 def close_prediction(outcome): #resolve prediction; outcome 1 = believers, outcome 2 = doubters
-    check_user_OAuth_token()
+    user_OAuth_token = check_user_OAuth_token()
     if outcome == 1:
         url = 'https://api.twitch.tv/helix/predictions'
         headers = {
