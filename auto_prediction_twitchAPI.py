@@ -12,6 +12,7 @@ import random
 from requests_oauthlib import OAuth2Session
 from urllib.parse import urlparse, parse_qs
 from pyperclip import copy
+import subprocess
 
 client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
 twitch_OAuth = "user_oauth.csv"
@@ -405,6 +406,9 @@ def get_latest_win(): #returns wins found in latest game data file
   
     return last_game_win
 
+def monitor_whispers():
+    pass
+    
 
 if __name__ =="__main__":
     broadcaster = input("What is the TWITCH CHANNEL name that you want to run predictions in? (confirm by hitting Enter) ") #channel the commands are run in
