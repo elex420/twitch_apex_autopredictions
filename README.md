@@ -23,7 +23,8 @@ Once you have gone through this process the twitch-OAuth keys will be fetched fr
 Once the first setup is done you can run the script either from your console or your preferred IDE. Every time you run the script it will ask you to input the twitch channel and the origin username.  
 *Make sure the player you are tracking has BR Damage, Apex Kills and Apex Wins trackers equipped on all the legends they play.* Data can only be fetched from equipped banners. Currently predictions on damage, rp gained, kills and wins are possible.  
 It will automatically set up randomised predictions for your viewers to bet on and either close them or cancel them, if you die before the prediction has been closed.  
-Upon closure or cancellation another prediction will be set up.   
+Upon closure or cancellation another prediction will be set up.  
+You can pause and unpause predictions now. Send a whisper to the person executing the script - "!stopgamba" to stop the execution, to resume whisper "startgamba".  
 
 ## 4. Contact  
 If you need help or have feedback you can reach me on [twitter](https://twitter.com/whotookelex420) or [discord](https://discordapp.com/users/elex420#4962).  
