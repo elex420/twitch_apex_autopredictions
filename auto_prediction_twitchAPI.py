@@ -16,8 +16,9 @@ import subprocess
 
 client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
 twitch_OAuth = "user_oauth.csv"
-prediction_window = 300
-
+mod_oauth = "mod_oauth.csv"
+prediction_window = 30
+mods = ["fillies_", "zaraki498", "gdolphn", "elex420"]
 
 with open ('client_secret.csv') as cs: #twitch API client secret
     reader = csv.reader(cs)
@@ -67,7 +68,7 @@ def get_user_OAuth_token(client_id): #get user OAuth token and write it to user_
     
     return access_token
 
-def check_user_OAuth_token(): #check twitch user OAuth token and refresh in case it's expired
+def check_user_OAuth_token(twitch_OAuth): #check twitch user OAuth token and refresh in case it's expired
     with open(twitch_OAuth) as current_token:
         reader = csv.reader(current_token)
         first_row = next(reader)  # Get the first row
@@ -256,7 +257,7 @@ def setup_win_prediction(): #setup returns value to bet on (x), prediction id an
     return prediction_id, outcome1_id, outcome2_id
 
 def close_prediction(outcome): #resolve prediction; outcome 1 = believers, outcome 2 = doubters
-    user_OAuth_token = check_user_OAuth_token()
+    user_OAuth_token = check_user_OAuth_token(twitch_OAuth)
     if outcome == 1:
         url = 'https://api.twitch.tv/helix/predictions'
         headers = {
@@ -270,8 +271,7 @@ def close_prediction(outcome): #resolve prediction; outcome 1 = believers, outco
             'status': "RESOLVED",
             'winning_outcome_id': outcome1_id
             }
-        response = requests.patch(url, headers=headers, json=data)
-        print(response.json())
+        requests.patch(url, headers=headers, json=data)
     elif outcome == 2:
         url = 'https://api.twitch.tv/helix/predictions'
         headers = {
@@ -285,8 +285,7 @@ def close_prediction(outcome): #resolve prediction; outcome 1 = believers, outco
             'status': "RESOLVED",
             'winning_outcome_id': outcome2_id
             }
-        response = requests.patch(url, headers=headers, json=data)
-        print(response.json())
+        requests.patch(url, headers=headers, json=data)
 
 def cancel_prediction(): #cancel prediction and return points
     url = 'https://api.twitch.tv/helix/predictions'
@@ -406,11 +405,45 @@ def get_latest_win(): #returns wins found in latest game data file
   
     return last_game_win
 
+###SETUP BREAK FUNCTIONALITY THROUGH WHISPERS
 def monitor_whispers():
-    pass
+    subprocess.Popen(["cmd", "/c", "start", "run_pubsub.bat"], shell=True)    
+    
+def evalstate():
+    sender = None
+    message = None
+    
+    with open ('message_data.csv') as md: #twitch API client secret
+        reader = csv.reader(md)
+        for row in reader:
+            sender = row[2]
+            message = row[3]
+    
+    if sender in mods and message == "!startgamba":
+        return "RUNNING"
+    if sender in mods and message == "!stopgamba":
+        return "PAUSED"
+
+def send_message(message):
+    url = 'https://api.twitch.tv/helix/chat/messages'
+    headers = {
+        'Authorization': f'Bearer {mod_OAuth_token}',
+        'Client-Id': client_id,
+        'Content-Type': 'application/json'
+        }
+    data = {
+        'broadcaster_id': streamer_id,
+        'sender_id': sender_id,
+        'message': message
+        }
+    response = requests.post(url, headers=headers, json=data)
+    print(response.json())         
     
 
 if __name__ =="__main__":
+    with open('message_data.csv', "w") as md:
+        writer = csv.writer(md)
+        writer.writerow("")
     broadcaster = input("What is the TWITCH CHANNEL name that you want to run predictions in? (confirm by hitting Enter) ") #channel the commands are run in
     origin = input("What is the ORIGIN USERNAME of the player you want to track? (confirm by hitting Enter) ")  #origin username of the tracked player
     while True:
@@ -424,9 +457,13 @@ if __name__ =="__main__":
         else:
             print("Invalid input. ")
             continue
+    monitor_whispers()
+    state = "RUNNING"
     OAuth_token = get_app_OAuth_token(client_id, client_secret) #authorizing this script
     streamer_id = get_broadcaster_id(broadcaster, OAuth_token, client_id) #
-    user_OAuth_token = check_user_OAuth_token()
+    user_OAuth_token = check_user_OAuth_token(twitch_OAuth)
+    mod_OAuth_token = check_user_OAuth_token(mod_oauth)
+    sender_id = get_broadcaster_id("elex420", OAuth_token, client_id)
     uid = get_als_uid()
     last_prediction = "none"
     prediction_type = choose_random_prediction()
@@ -437,151 +474,233 @@ if __name__ =="__main__":
     except:
         pass
     while True:
-        user_OAuth_token = check_user_OAuth_token()
-        prediction_type = choose_random_prediction()
-        if "kills" in prediction_type:
-            print("kill prediction setup")
-            last_prediction = prediction_type
-            x, prediction_id, outcome1_id, outcome2_id = setup_kill_prediction(user_OAuth_token, client_id, streamer_id, prediction_window)
-            starttime = time.time()
-            while True:
-                if previous_start_time != get_last_gamestart():
-                    if int(time.time() - starttime) >= (prediction_window + 45):
-                        if get_latest_kills() == "not found":
+        if state == "RUNNING":
+            user_OAuth_token = check_user_OAuth_token(twitch_OAuth)
+            prediction_type = choose_random_prediction()
+            if "kills" in prediction_type:
+                print("kill prediction setup")
+                last_prediction = prediction_type
+                x, prediction_id, outcome1_id, outcome2_id = setup_kill_prediction(user_OAuth_token, client_id, streamer_id, prediction_window)
+                starttime = time.time()
+                while True:
+                    if previous_start_time != get_last_gamestart():
+                        if int(time.time() - starttime) >= (prediction_window + 45):
+                            if get_latest_kills() == "not found":
+                                cancel_prediction()
+                                prediction_type = "none"
+                                previous_start_time = get_last_gamestart()
+                                state = evalstate()
+                                if state == "PAUSED":
+                                    send_message("AUTOGAMBA PAUSED")
+                                else:
+                                    pass
+                                print("prediction cancelled - kills not found - equip legend kills tracker")
+                                break
+                            elif get_latest_kills() >= x:
+                                close_prediction(1)
+                                prediction_type = "none"
+                                previous_start_time = get_last_gamestart()
+                                state = evalstate()
+                                if state == "PAUSED":
+                                    send_message("AUTOGAMBA PAUSED")
+                                else:
+                                    pass
+                                print("closed kill prediction - 1")
+                                time.sleep(10)
+                                break
+                            elif get_latest_kills() <x:
+                                close_prediction(2)
+                                prediction_type = "none"
+                                previous_start_time = get_last_gamestart()
+                                state = evalstate()
+                                if state == "PAUSED":
+                                    send_message("AUTOGAMBA PAUSED")
+                                else:
+                                    pass
+                                print("closed kill prediction - 2")
+                                time.sleep(10)
+                                break
+                        elif int(time.time() - starttime) < (prediction_window + 45):
                             cancel_prediction()
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
-                            print("prediction cancelled - kills not found - equip legend kills tracker")
+                            state = evalstate()
+                            if state == "PAUSED":
+                                send_message("AUTOGAMBA PAUSED")
+                            else:
+                                pass
+                            print("cancelled kill prediction")
                             break
-                        elif get_latest_kills() >= x:
-                            close_prediction(1)
+                    else:
+                        time.sleep(30)
+                            
+            elif "rp" in prediction_type:
+                print("rp prediction setup")
+                last_prediction = prediction_type
+                x, prediction_id, outcome1_id, outcome2_id = setup_rp_prediction()
+                starttime = time.time()
+                while True:
+                    if previous_start_time != get_last_gamestart():
+                        if int(time.time() - starttime) >= (prediction_window + 45):
+                            if get_rp_change() >= x:
+                                close_prediction(1)
+                                prediction_type = "none"
+                                previous_start_time = get_last_gamestart()
+                                state = evalstate()
+                                if state == "PAUSED":
+                                    send_message("AUTOGAMBA PAUSED")
+                                else:
+                                    pass
+                                print("closed rp prediction - 1")
+                                time.sleep(10)
+                                break
+                            elif get_rp_change() < x:
+                                close_prediction(2)
+                                prediction_type = "none"
+                                previous_start_time = get_last_gamestart()
+                                state = evalstate()
+                                if state == "PAUSED":
+                                    send_message("AUTOGAMBA PAUSED")
+                                else:
+                                    pass
+                                print("closed rp prediction - 2")
+                                break
+                        elif int(time.time() - starttime) < (prediction_window + 45):
+                            cancel_prediction()
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
-                            print("closed kill prediction - 1")
+                            state = evalstate()
+                            if state == "PAUSED":
+                                send_message("AUTOGAMBA PAUSED")
+                            else:
+                                pass
+                            print("cancelled rp prediction")
                             time.sleep(10)
                             break
-                        elif get_latest_kills() <x:
-                            close_prediction(2)
+                    else:
+                        time.sleep(30)
+            
+            elif "damage" in prediction_type:
+                print("damage prediction setup")
+                last_prediction = prediction_type
+                x, prediction_id, outcome1_id, outcome2_id = setup_damage_prediction()
+                starttime = time.time()
+                while True:
+                    if previous_start_time != get_last_gamestart():
+                        if int(time.time() - starttime) >= (prediction_window + 45):
+                            if get_latest_damage() == "not found":
+                                cancel_prediction()
+                                prediction_type = "none"
+                                previous_start_time = get_last_gamestart()
+                                state = evalstate()
+                                if state == "PAUSED":
+                                    send_message("AUTOGAMBA PAUSED")
+                                else:
+                                    pass
+                                print("prediction cancelled - damage not found - equip legend damage tracker")
+                                break
+                            elif get_latest_damage() >= x:
+                                close_prediction(1)
+                                prediction_type = "none"
+                                previous_start_time = get_last_gamestart()
+                                state = evalstate()
+                                if state == "PAUSED":
+                                    send_message("AUTOGAMBA PAUSED")
+                                else:
+                                    pass
+                                print("closed damage prediction - 1")
+                                time.sleep(10)
+                                break
+                            elif get_latest_damage() < x:
+                                close_prediction(2)
+                                prediction_type = "none"
+                                previous_start_time = get_last_gamestart()
+                                state = evalstate()
+                                if state == "PAUSED":
+                                    send_message("AUTOGAMBA PAUSED")
+                                else:
+                                    pass
+                                print("closed damage prediction - 2")
+                                time.sleep(10)
+                                break
+                        elif int(time.time() - starttime) < (prediction_window + 45):
+                            cancel_prediction()
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
-                            print("closed kill prediction - 2")
-                            time.sleep(10)
+                            state = evalstate()
+                            if state == "PAUSED":
+                                send_message("AUTOGAMBA PAUSED")
+                            else:
+                                pass
+                            print("cancelled damage prediction")
                             break
-                    elif int(time.time() - starttime) < (prediction_window + 45):
-                        cancel_prediction()
-                        prediction_type = "none"
-                        previous_start_time = get_last_gamestart()
-                        print("cancelled kill prediction")
-                        break
-                else:
-                    time.sleep(30)
+                    else:
+                        time.sleep(30)
                         
-        elif "rp" in prediction_type:
-            print("rp prediction setup")
-            last_prediction = prediction_type
-            x, prediction_id, outcome1_id, outcome2_id = setup_rp_prediction()
-            starttime = time.time()
-            while True:
-                if previous_start_time != get_last_gamestart():
-                    if int(time.time() - starttime) >= (prediction_window + 45):
-                        if get_rp_change() >= x:
-                            close_prediction(1)
-                            prediction_type = "none"
-                            previous_start_time = get_last_gamestart()
-                            print("closed rp prediction - 1")
-                            time.sleep(10)
-                            break
-                        elif get_rp_change() < x:
-                            close_prediction(2)
-                            prediction_type = "none"
-                            previous_start_time = get_last_gamestart()
-                            print("closed rp prediction - 2")
-                            break
-                    elif int(time.time() - starttime) < (prediction_window + 45):
-                        cancel_prediction()
-                        prediction_type = "none"
-                        previous_start_time = get_last_gamestart()
-                        print("cancelled rp prediction")
-                        time.sleep(10)
-                        break
-                else:
-                    time.sleep(30)
-        
-        elif "damage" in prediction_type:
-            print("damage prediction setup")
-            last_prediction = prediction_type
-            x, prediction_id, outcome1_id, outcome2_id = setup_damage_prediction()
-            starttime = time.time()
-            while True:
-                if previous_start_time != get_last_gamestart():
-                    if int(time.time() - starttime) >= (prediction_window + 45):
-                        if get_latest_damage() == "not found":
+            elif "win" in prediction_type:
+                print("win prediction setup")
+                last_prediction = prediction_type
+                prediction_id, outcome1_id, outcome2_id = setup_win_prediction()
+                starttime = time.time()
+                while True:
+                    if previous_start_time != get_last_gamestart():
+                        if int(time.time() - starttime) >= (prediction_window + 45):
+                            if get_latest_win() == "not found":
+                                cancel_prediction()
+                                prediction_type = "none"
+                                previous_start_time = get_last_gamestart()
+                                state = evalstate()
+                                if state == "PAUSED":
+                                    send_message("AUTOGAMBA PAUSED")
+                                else:
+                                    pass
+                                print("prediction cancelled - wins not found - equip legend wins tracker")
+                                break
+                            elif get_latest_win() == 1:
+                                close_prediction(1)
+                                prediction_type = "none"
+                                previous_start_time = get_last_gamestart()
+                                state = evalstate()
+                                if state == "PAUSED":
+                                    send_message("AUTOGAMBA PAUSED")
+                                else:
+                                    pass
+                                print("closed win prediction - 1")
+                                time.sleep(10)
+                                break
+                            elif get_latest_win() == 0:
+                                close_prediction(2)
+                                prediction_type = "none"
+                                previous_start_time = get_last_gamestart()
+                                state = evalstate()
+                                if state == "PAUSED":
+                                    send_message("AUTOGAMBA PAUSED")
+                                else:
+                                    pass
+                                print("closed win prediction - 2")
+                                time.sleep(10)
+                                break
+                        elif int(time.time() - starttime) < (prediction_window + 45):
                             cancel_prediction()
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
-                            print("prediction cancelled - damage not found - equip legend damage tracker")
+                            state = evalstate()
+                            if state == "PAUSED":
+                                send_message("AUTOGAMBA PAUSED")
+                            else:
+                                pass
+                            print("cancelled win prediction")
                             break
-                        elif get_latest_damage() >= x:
-                            close_prediction(1)
-                            prediction_type = "none"
-                            previous_start_time = get_last_gamestart()
-                            print("closed damage prediction - 1")
-                            time.sleep(10)
-                            break
-                        elif get_latest_damage() < x:
-                            close_prediction(2)
-                            prediction_type = "none"
-                            previous_start_time = get_last_gamestart()
-                            print("closed damage prediction - 2")
-                            time.sleep(10)
-                            break
-                    elif int(time.time() - starttime) < (prediction_window + 45):
-                        cancel_prediction()
-                        prediction_type = "none"
-                        previous_start_time = get_last_gamestart()
-                        print("cancelled damage prediction")
-                        break
-                else:
-                    time.sleep(30)
-                    
-        elif "win" in prediction_type:
-            print("win prediction setup")
-            last_prediction = prediction_type
-            prediction_id, outcome1_id, outcome2_id = setup_win_prediction()
-            starttime = time.time()
-            while True:
-                if previous_start_time != get_last_gamestart():
-                    if int(time.time() - starttime) >= (prediction_window + 45):
-                        if get_latest_win() == "not found":
-                            cancel_prediction()
-                            prediction_type = "none"
-                            previous_start_time = get_last_gamestart()
-                            print("prediction cancelled - wins not found - equip legend wins tracker")
-                            break
-                        elif get_latest_win() == 1:
-                            close_prediction(1)
-                            prediction_type = "none"
-                            previous_start_time = get_last_gamestart()
-                            print("closed win prediction - 1")
-                            time.sleep(10)
-                            break
-                        elif get_latest_win() == 0:
-                            close_prediction(2)
-                            prediction_type = "none"
-                            previous_start_time = get_last_gamestart()
-                            print("closed win prediction - 2")
-                            time.sleep(10)
-                            break
-                    elif int(time.time() - starttime) < (prediction_window + 45):
-                        cancel_prediction()
-                        prediction_type = "none"
-                        previous_start_time = get_last_gamestart()
-                        print("cancelled win prediction")
-                        break
-                else:
-                    time.sleep(30)
-        
-        else:
+                    else:
+                        time.sleep(30)
+            
+            else:
+                continue   
+        elif state == "PAUSED":
+            state = evalstate()
+            if state == "RUNNING":
+                send_message("AUTOGAMBA STARTED")
+            else:
+                pass
             continue
-                
         
