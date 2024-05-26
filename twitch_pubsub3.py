@@ -98,21 +98,7 @@ def get_broadcaster_id(broadcaster, OAuth_token, client_id): #get broadcaster tw
         return data['data'][0]['id']
     else:
         return None
-###SENDING MESSAGE IN TWITCH CHAT
-def send_message(message):
-    url = 'https://api.twitch.tv/helix/chat/messages'
-    headers = {
-        'Authorization': f'Bearer {user_OAuth_token}',
-        'Client-Id': client_id,
-        'Content-Type': 'application/json'
-        }
-    data = {
-        'broadcaster_id': streamer_id,
-        'sender_id': sender_id,
-        'message': message
-        }
-    response = requests.post(url, headers=headers, json=data)
-    print(response.json())
+
 
 ###WEBSOCKET SETUP
 def create_websocket():
@@ -170,13 +156,10 @@ def on_open(ws):
 
 
 if __name__ == "__main__":
-    broadcaster = "vUnlucky"
     sender = "elex420"
     OAuth_token = get_app_OAuth_token(client_id, client_secret) #authorizing this script
-    streamer_id = get_broadcaster_id(broadcaster, OAuth_token, client_id) #
     sender_id = get_broadcaster_id(sender, OAuth_token, client_id)
     user_OAuth_token = check_user_OAuth_token()
-    #send_message(" ")
     ws = create_websocket()
     ws.on_open = on_open
     ws.run_forever()
