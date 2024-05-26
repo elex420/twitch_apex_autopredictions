@@ -415,9 +415,9 @@ def evalstate(state):
     
     with open ('message_data.csv') as md: #twitch API client secret
         reader = csv.reader(md)
-        for row in reader:
-            sender = row[2]
-            message = row[3]
+        row = next(reader)
+        sender = row[2]
+        message = row[3]
     
     if sender in mods and message == "!startgamba":
         return "RUNNING"
