@@ -420,11 +420,13 @@ def evalstate(state):
         message = row[3]
     
     if sender in mods and message == "!startgamba":
-        return "RUNNING"
+        chatmessage = sender + " AUTOGAMBA STARTED!"
+        return "RUNNING", chatmessage
     if sender in mods and message == "!stopgamba":
-        return "PAUSED"
+        chatmessage = sender + " AUTOGAMBA PAUSED!"
+        return "PAUSED", chatmessage
     else:
-        return state
+        return state, None
     
 def send_message(message):
     url = 'https://api.twitch.tv/helix/chat/messages'
@@ -464,7 +466,7 @@ if __name__ =="__main__":
     OAuth_token = get_app_OAuth_token(client_id, client_secret) #authorizing this script
     streamer_id = get_broadcaster_id(broadcaster, OAuth_token, client_id) #
     user_OAuth_token = check_user_OAuth_token(twitch_OAuth)
-    #mod_OAuth_token = check_user_OAuth_token(mod_oauth)
+    mod_OAuth_token = check_user_OAuth_token(mod_oauth)
     sender_id = get_broadcaster_id("elex420", OAuth_token, client_id)
     uid = get_als_uid()
     last_prediction = "none"
@@ -491,34 +493,34 @@ if __name__ =="__main__":
                                 cancel_prediction()
                                 prediction_type = "none"
                                 previous_start_time = get_last_gamestart()
-                                state = evalstate(state)
-                                # if state == "PAUSED":
-                                #     send_message("AUTOGAMBA PAUSED")
-                                # else:
-                                #     pass
+                                state, chatmessage = evalstate(state)
+                                if state == "PAUSED":
+                                    send_message(chatmessage)
+                                else:
+                                    pass
                                 print("prediction cancelled - kills not found - equip legend kills tracker")
                                 break
                             elif get_latest_kills() >= x:
                                 close_prediction(1)
                                 prediction_type = "none"
                                 previous_start_time = get_last_gamestart()
-                                state = evalstate(state)
-                                # if state == "PAUSED":
-                                #     send_message("AUTOGAMBA PAUSED")
-                                # else:
-                                #     pass
-                                # print("closed kill prediction - 1")
+                                state, chatmessage = evalstate(state)
+                                if state == "PAUSED":
+                                    send_message(chatmessage)
+                                else:
+                                    pass
+                                print("closed kill prediction - 1")
                                 time.sleep(10)
                                 break
                             elif get_latest_kills() <x:
                                 close_prediction(2)
                                 prediction_type = "none"
                                 previous_start_time = get_last_gamestart()
-                                state = evalstate(state)
-                                # if state == "PAUSED":
-                                #     send_message("AUTOGAMBA PAUSED")
-                                # else:
-                                #     pass
+                                state, chatmessage = evalstate(state)
+                                if state == "PAUSED":
+                                    send_message(chatmessage)
+                                else:
+                                    pass
                                 print("closed kill prediction - 2")
                                 time.sleep(10)
                                 break
@@ -526,11 +528,11 @@ if __name__ =="__main__":
                             cancel_prediction()
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
-                            state = evalstate(state)
-                            # if state == "PAUSED":
-                            #     send_message("AUTOGAMBA PAUSED")
-                            # else:
-                            #     pass
+                            state, chatmessage = evalstate(state)
+                            if state == "PAUSED":
+                                send_message(chatmessage)
+                            else:
+                                pass
                             print("cancelled kill prediction")
                             break
                     else:
@@ -548,11 +550,11 @@ if __name__ =="__main__":
                                 close_prediction(1)
                                 prediction_type = "none"
                                 previous_start_time = get_last_gamestart()
-                                state = evalstate(state)
-                                # if state == "PAUSED":
-                                #     send_message("AUTOGAMBA PAUSED")
-                                # else:
-                                #     pass
+                                state, chatmessage = evalstate(state)
+                                if state == "PAUSED":
+                                    send_message(chatmessage)
+                                else:
+                                    pass
                                 print("closed rp prediction - 1")
                                 time.sleep(10)
                                 break
@@ -560,22 +562,22 @@ if __name__ =="__main__":
                                 close_prediction(2)
                                 prediction_type = "none"
                                 previous_start_time = get_last_gamestart()
-                                state = evalstate(state)
-                                # if state == "PAUSED":
-                                #     send_message("AUTOGAMBA PAUSED")
-                                # else:
-                                #     pass
+                                state, chatmessage = evalstate(state)
+                                if state == "PAUSED":
+                                    send_message(chatmessage)
+                                else:
+                                    pass
                                 print("closed rp prediction - 2")
                                 break
                         elif int(time.time() - starttime) < (prediction_window + 45):
                             cancel_prediction()
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
-                            state = evalstate(state)
-                            # if state == "PAUSED":
-                            #     send_message("AUTOGAMBA PAUSED")
-                            # else:
-                            #     pass
+                            state, chatmessage = evalstate(state)
+                            if state == "PAUSED":
+                                send_message(chatmessage)
+                            else:
+                                pass
                             print("cancelled rp prediction")
                             time.sleep(10)
                             break
@@ -594,22 +596,22 @@ if __name__ =="__main__":
                                 cancel_prediction()
                                 prediction_type = "none"
                                 previous_start_time = get_last_gamestart()
-                                state = evalstate(state)
-                                # if state == "PAUSED":
-                                #     send_message("AUTOGAMBA PAUSED")
-                                # else:
-                                #     pass
+                                state, chatmessage = evalstate(state)
+                                if state == "PAUSED":
+                                    send_message(chatmessage)
+                                else:
+                                    pass
                                 print("prediction cancelled - damage not found - equip legend damage tracker")
                                 break
                             elif get_latest_damage() >= x:
                                 close_prediction(1)
                                 prediction_type = "none"
                                 previous_start_time = get_last_gamestart()
-                                state = evalstate(state)
-                                # if state == "PAUSED":
-                                #     send_message("AUTOGAMBA PAUSED")
-                                # else:
-                                #     pass
+                                state, chatmessage = evalstate(state)
+                                if state == "PAUSED":
+                                    send_message(chatmessage)
+                                else:
+                                    pass
                                 print("closed damage prediction - 1")
                                 time.sleep(10)
                                 break
@@ -617,11 +619,11 @@ if __name__ =="__main__":
                                 close_prediction(2)
                                 prediction_type = "none"
                                 previous_start_time = get_last_gamestart()
-                                state = evalstate(state)
-                                # if state == "PAUSED":
-                                #     send_message("AUTOGAMBA PAUSED")
-                                # else:
-                                #     pass
+                                state, chatmessage = evalstate(state)
+                                if state == "PAUSED":
+                                    send_message(chatmessage)
+                                else:
+                                    pass
                                 print("closed damage prediction - 2")
                                 time.sleep(10)
                                 break
@@ -629,11 +631,11 @@ if __name__ =="__main__":
                             cancel_prediction()
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
-                            state = evalstate(state)
-                            # if state == "PAUSED":
-                            #     send_message("AUTOGAMBA PAUSED")
-                            # else:
-                            #     pass
+                            state, chatmessage = evalstate(state)
+                            if state == "PAUSED":
+                                send_message(chatmessage)
+                            else:
+                                pass
                             print("cancelled damage prediction")
                             break
                     else:
@@ -651,22 +653,22 @@ if __name__ =="__main__":
                                 cancel_prediction()
                                 prediction_type = "none"
                                 previous_start_time = get_last_gamestart()
-                                state = evalstate(state)
-                                # if state == "PAUSED":
-                                #     send_message("AUTOGAMBA PAUSED")
-                                # else:
-                                #     pass
+                                state, chatmessage = evalstate(state)
+                                if state == "PAUSED":
+                                    send_message(chatmessage)
+                                else:
+                                    pass
                                 print("prediction cancelled - wins not found - equip legend wins tracker")
                                 break
                             elif get_latest_win() == 1:
                                 close_prediction(1)
                                 prediction_type = "none"
                                 previous_start_time = get_last_gamestart()
-                                state = evalstate(state)
-                                # if state == "PAUSED":
-                                #     send_message("AUTOGAMBA PAUSED")
-                                # else:
-                                #     pass
+                                state, chatmessage = evalstate(state)
+                                if state == "PAUSED":
+                                    send_message(chatmessage)
+                                else:
+                                    pass
                                 print("closed win prediction - 1")
                                 time.sleep(10)
                                 break
@@ -674,11 +676,11 @@ if __name__ =="__main__":
                                 close_prediction(2)
                                 prediction_type = "none"
                                 previous_start_time = get_last_gamestart()
-                                state = evalstate(state)
-                                # if state == "PAUSED":
-                                #     send_message("AUTOGAMBA PAUSED")
-                                # else:
-                                #     pass
+                                state, chatmessage = evalstate(state)
+                                if state == "PAUSED":
+                                    send_message(chatmessage)
+                                else:
+                                    pass
                                 print("closed win prediction - 2")
                                 time.sleep(10)
                                 break
@@ -686,11 +688,11 @@ if __name__ =="__main__":
                             cancel_prediction()
                             prediction_type = "none"
                             previous_start_time = get_last_gamestart()
-                            state = evalstate(state)
-                            # if state == "PAUSED":
-                            #     send_message("AUTOGAMBA PAUSED")
-                            # else:
-                            #     pass
+                            state, chatmessage = evalstate(state)
+                            if state == "PAUSED":
+                                send_message(chatmessage)
+                            else:
+                                pass
                             print("cancelled win prediction")
                             break
                     else:
@@ -699,9 +701,9 @@ if __name__ =="__main__":
             else:
                 continue   
         elif state == "PAUSED":
-            state = evalstate(state)
+            state, chatmessage = evalstate(state)
             if state == "RUNNING":
-                # send_message("AUTOGAMBA STARTED")
+                send_message(chatmessage)
                 pass
             else:
                 pass
