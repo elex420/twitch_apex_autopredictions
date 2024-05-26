@@ -9,8 +9,12 @@ import threading
 import json
 
 client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
-client_secret = "c2qscw33co4vvkqvqkkrnx9m9h9v49"
 twitch_OAuth = "mod_oauth.csv"
+
+with open ('client_secret.csv') as cs: #twitch API client secret
+    reader = csv.reader(cs)
+    for row in reader:
+        client_secret = row[0]
         
 
 ###HANDLING TWITCH AUTHORIZATION
