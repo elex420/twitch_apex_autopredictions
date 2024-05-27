@@ -423,10 +423,10 @@ def evalstate(state):
         message = row[3]
     
     if sender in mods and message == "!startgamba":
-        chatmessage = sender + " AUTOGAMBA STARTED!"
+        chatmessage = sender + " AUTO PREDICTIONS STARTED!"
         return "RUNNING", chatmessage
     if sender in mods and message == "!stopgamba":
-        chatmessage = sender + " AUTOGAMBA PAUSED!"
+        chatmessage = sender + " AUTO PREDICTIONS PAUSED!"
         return "PAUSED", chatmessage
     else:
         return state, None
@@ -443,8 +443,7 @@ def send_message(message):
         'sender_id': sender_id,
         'message': message
         }
-    response = requests.post(url, headers=headers, json=data)
-    print(response.json())         
+    requests.post(url, headers=headers, json=data)   
     
 
 if __name__ =="__main__":
@@ -704,11 +703,16 @@ if __name__ =="__main__":
             else:
                 continue   
         elif state == "PAUSED":
-            state, chatmessage = evalstate(state)
-            if state == "RUNNING":
-                send_message(chatmessage)
-                pass
-            else:
-                pass
+            while True:
+                time.sleep(5)
+                try:
+                    state, chatmessage = evalstate(state)
+                except:
+                    continue
+                if state == "RUNNING":
+                    send_message(chatmessage)
+                    break
+                else:
+                    continue
             continue
         
