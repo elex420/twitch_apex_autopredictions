@@ -120,6 +120,7 @@ def on_message(ws, message):
     content = message_data['body']
     
     if content == "!startgamba" or content == "!stopgamba":    
+        print("MESSAGE-ID: ", message_id, "THREAD: ", thread, "SENDER: ", sender, "MESSAGE: ", content)
         with open('message_data.csv', 'w', newline='') as csvfile:
             fieldnames = ['message_id', 'thread', 'sender', 'content']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)

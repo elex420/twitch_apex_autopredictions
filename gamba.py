@@ -470,7 +470,7 @@ if __name__ =="__main__":
     streamer_id = get_broadcaster_id(broadcaster, OAuth_token, client_id) #
     user_OAuth_token = check_user_OAuth_token(twitch_OAuth)
     mod_OAuth_token = check_user_OAuth_token(mod_oauth)
-    sender_id = get_broadcaster_id("elex420", OAuth_token, client_id)
+    sender_id = get_broadcaster_id("elexAutopredictions", OAuth_token, client_id)
     uid = get_als_uid()
     last_prediction = "none"
     prediction_type = choose_random_prediction()
