@@ -18,7 +18,10 @@ client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
 twitch_OAuth = "user_oauth.csv"
 mod_oauth = "mod_oauth.csv"
 prediction_window = 300
-mods = ["fillies_", "zaraki498", "gdolphn", "elex420"]
+
+with open ('modlist.csv') as ml:
+    reader = csv.reader(ml)
+    mods = next(reader)
 
 with open ('client_secret.csv') as cs: #twitch API client secret
     reader = csv.reader(cs)
