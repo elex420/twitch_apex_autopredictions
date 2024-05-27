@@ -9,6 +9,7 @@ import threading
 import json
 
 client_id = "1b4iweppmup6hvezqf0b2vqxmqbf2e"  #twitch API client id
+sender = "elexAutopredictions"
 twitch_OAuth = "mod_oauth.csv"
 
 with open ('client_secret.csv') as cs: #twitch API client secret
@@ -117,7 +118,6 @@ def on_message(ws, message):
     thread = message_data['thread_id']
     sender = message_data['tags']['login']
     content = message_data['body']
-    print("THREAD: ", thread,"SENDER: ", sender, "CONTENT: ", content, "ID: ", message_id)
     
     if content == "!startgamba" or content == "!stopgamba":    
         with open('message_data.csv', 'w', newline='') as csvfile:
@@ -160,7 +160,6 @@ def on_open(ws):
 
 
 if __name__ == "__main__":
-    sender = "elex420"
     OAuth_token = get_app_OAuth_token(client_id, client_secret) #authorizing this script
     sender_id = get_broadcaster_id(sender, OAuth_token, client_id)
     user_OAuth_token = check_user_OAuth_token()
