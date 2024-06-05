@@ -500,6 +500,8 @@ if __name__ =="__main__":
                                     send_message(chatmessage)
                                 else:
                                     pass
+                                errormessage = "@" + broadcaster + " EQUIP KILLS TRACKER FOR CURRENT LEGEND"
+                                send_message(errormessage)
                                 print("prediction cancelled - kills not found - equip legend kills tracker")
                                 break
                             elif get_latest_kills() >= x:
@@ -603,6 +605,8 @@ if __name__ =="__main__":
                                     send_message(chatmessage)
                                 else:
                                     pass
+                                errormessage = "@" + broadcaster + " EQUIP DAMAGE TRACKER FOR CURRENT LEGEND"
+                                send_message(errormessage)
                                 print("prediction cancelled - damage not found - equip legend damage tracker")
                                 break
                             elif get_latest_damage() >= x:
@@ -660,6 +664,8 @@ if __name__ =="__main__":
                                     send_message(chatmessage)
                                 else:
                                     pass
+                                errormessage = "@" + broadcaster + " EQUIP WINS TRACKER FOR CURRENT LEGEND"
+                                send_message(errormessage)
                                 print("prediction cancelled - wins not found - equip legend wins tracker")
                                 break
                             elif get_latest_win() == 1:
