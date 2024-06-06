@@ -152,7 +152,7 @@ def randomise_kill_prediction(): #randomise the kill values to bet on
     return title, outcome1, outcome2, x
 
 def randomise_rp_prediction(): #randomise the rp values to bet on
-    x = random.randrange(50, 200, 10)
+    x = random.randrange(0, 200, 10)
     title = "How much rp will be gained next game?"
     outcome1 = str(x) + " or more"
     outcome2 = "less than " + str(x)
@@ -160,7 +160,7 @@ def randomise_rp_prediction(): #randomise the rp values to bet on
     return title, outcome1, outcome2, x
 
 def randomise_damage_prediction(): #randomise the kill values to bet on
-    x = int(random.randrange(1200, 2500, 50))
+    x = int(random.randrange(800, 2000, 50))
     title = "How much damage next game?"
     outcome1 = str(x) + " or more"
     outcome2 = "less than " + str(x)
@@ -450,8 +450,8 @@ if __name__ =="__main__":
     with open('message_data.csv', "w") as md:
         writer = csv.writer(md)
         writer.writerow(["!startgamba", "!startgamba", "!startgamba", "!startgamba"])
-    broadcaster = input("What is the TWITCH CHANNEL name that you want to run predictions in? (confirm by hitting Enter) ") #channel the commands are run in
-    origin = input("What is the ORIGIN USERNAME of the player you want to track? (confirm by hitting Enter) ")  #origin username of the tracked player
+    broadcaster = input("What is the TWITCH CHANNEL name that you want to run predictions in? (confirm by hitting Enter): ") #channel the commands are run in
+    origin = input("What is the ORIGIN USERNAME of the player you want to track? (confirm by hitting Enter): ")  #origin username of the tracked player
     while True:
         mode = input("Is ranked being played? (y/n) ")
         if mode == "y" or mode == "yes":
